@@ -11,8 +11,8 @@ permissions:
 env:
   AWS_REGION: eu-west-1
   ECR_REPO: rwad-room-dev-frontend
-  ECS_CLUSTER: dev-rwad-cluster
-  ECS_SERVICE: dev-rwad-frontend-svc
+  ECS_CLUSTER: dev-rwad-cluster-9f72b8f
+  ECS_SERVICE: dev-rwad-frontend-svc-454b32d
 
 jobs:
   deploy:
