@@ -160,6 +160,7 @@ export interface StartupListing {
 
 export interface PartnerListing {
   id: string;
+  userId: string; // target id for introduction requests
   companyName: string;
   description?: string | null;
   serviceCategory?: Sector | null;
@@ -172,6 +173,7 @@ export interface PartnerListing {
 
 export interface MentorListing {
   id: string;
+  userId: string; // target id for session requests
   name: string;
   title?: string | null;
   expertise: string[];

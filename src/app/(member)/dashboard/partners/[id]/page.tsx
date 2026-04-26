@@ -38,13 +38,14 @@ export default function PartnerDetailPage() {
   }, [id]);
 
   const handleRequestIntro = async () => {
+    if (!partner) return;
     setSending(true);
     setError("");
     try {
       await api("/introductions", {
         method: "POST",
         body: JSON.stringify({
-          targetId: id,
+          targetId: partner.userId,
           type: "PARTNER_INTRODUCTION",
           purpose,
           urgency,

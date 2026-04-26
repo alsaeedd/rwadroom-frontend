@@ -38,13 +38,14 @@ export default function MentorDetailPage() {
   }, [id]);
 
   const handleRequestSession = async () => {
+    if (!mentor) return;
     setSending(true);
     setError("");
     try {
       await api("/introductions", {
         method: "POST",
         body: JSON.stringify({
-          targetId: id,
+          targetId: mentor.userId,
           type: "MENTOR_SESSION",
           purpose,
           urgency,
