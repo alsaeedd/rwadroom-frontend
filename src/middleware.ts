@@ -8,7 +8,18 @@ const publicPaths = [
   "/forgot-password",
   "/reset-password",
   "/set-password",
+  // Public marketing site (§5.1)
+  "/about",
+  "/community",
+  "/partners",
+  "/mentors",
+  "/resources",
+  "/join",
+  "/contact",
 ];
+
+// Treat the root path "/" as public (landing page).
+const publicExactPaths = new Set(["/"]);
 
 // Middleware runs on the edge - we can't check JWT here since the access token
 // is stored in memory (not cookies). Instead, we use lightweight cookie checks
@@ -18,7 +29,7 @@ export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Let public paths through
-  if (publicPaths.some((p) => pathname.startsWith(p))) {
+  if (publicExactPaths.has(pathname) || publicPaths.some((p) => pathname.startsWith(p))) {
     return NextResponse.next();
   }
 

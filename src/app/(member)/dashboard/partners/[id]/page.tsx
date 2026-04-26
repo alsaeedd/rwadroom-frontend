@@ -12,8 +12,9 @@ import { Select } from "@/components/ui/select";
 import { Alert } from "@/components/ui/alert";
 import { useAuthStore } from "@/lib/auth";
 import { api, ApiError } from "@/lib/api";
+import { SECTOR_LABEL } from "@/lib/enums";
 import type { PartnerListing } from "@/lib/types";
-import { ArrowLeft, Handshake, Globe, Lock } from "lucide-react";
+import { ArrowLeft, Globe, Handshake, Lock } from "lucide-react";
 
 export default function PartnerDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -82,8 +83,11 @@ export default function PartnerDetailPage() {
           )}
           <div>
             <h1 className="text-xl font-bold">{partner.companyName}</h1>
+            {partner.serviceCategory && (
+              <p className="text-sm text-muted">{SECTOR_LABEL[partner.serviceCategory]}</p>
+            )}
             {partner.website && (
-              <a href={partner.website} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-sm text-primary hover:text-primary/80">
+              <a href={partner.website} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-sm text-primary hover:text-primary/80 mt-1">
                 <Globe className="h-3.5 w-3.5" /> Website
               </a>
             )}
@@ -123,12 +127,39 @@ export default function PartnerDetailPage() {
       {/* Intro request modal */}
       <Modal open={introModal} onClose={() => setIntroModal(false)} title="Request Introduction">
         <div className="flex flex-col gap-4">
-          <Textarea label="Purpose" placeholder="Why would you like to connect with this partner?" value={purpose} onChange={(e) => setPurpose(e.target.value)} />
-          <Select label="Urgency" options={[{ value: "LOW", label: "Low" }, { value: "MEDIUM", label: "Medium" }, { value: "HIGH", label: "High" }]} value={urgency} onChange={(e) => setUrgency(e.target.value)} />
-          <Textarea label="Additional Context (optional)" placeholder="Any extra details..." value={context} onChange={(e) => setContext(e.target.value)} />
+          <Textarea
+            label="Purpose"
+            placeholder="Why would you like to connect with this partner?"
+            value={purpose}
+            onChange={(e) => setPurpose(e.target.value)}
+            maxLength={1000}
+          />
+          <Select
+            label="Urgency"
+            options={[
+              { value: "LOW", label: "Low" },
+              { value: "MEDIUM", label: "Medium" },
+              { value: "HIGH", label: "High" },
+            ]}
+            value={urgency}
+            onChange={(e) => setUrgency(e.target.value)}
+          />
+          <Textarea
+            label="Additional Context (optional)"
+            placeholder="Any extra details..."
+            value={context}
+            onChange={(e) => setContext(e.target.value)}
+            maxLength={2000}
+          />
           <div className="flex gap-3 justify-end pt-2">
             <Button variant="ghost" onClick={() => setIntroModal(false)}>Cancel</Button>
-            <Button isLoading={sending} disabled={!purpose.trim()} onClick={handleRequestIntro}>Submit Request</Button>
+            <Button
+              isLoading={sending}
+              disabled={!purpose.trim() || purpose.trim().length < 10}
+              onClick={handleRequestIntro}
+            >
+              Submit Request
+            </Button>
           </div>
         </div>
       </Modal>

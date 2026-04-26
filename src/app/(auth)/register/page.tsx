@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -28,6 +29,8 @@ type RegisterForm = z.infer<typeof registerSchema>;
 export default function RegisterPage() {
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
+  const searchParams = useSearchParams();
+  const initialRole = searchParams.get("role") === "MENTOR" ? "MENTOR" : "STARTUP";
 
   const {
     register,
@@ -36,7 +39,7 @@ export default function RegisterPage() {
     formState: { errors, isSubmitting },
   } = useForm<RegisterForm>({
     resolver: zodResolver(registerSchema),
-    defaultValues: { role: "STARTUP" },
+    defaultValues: { role: initialRole },
   });
 
   const selectedRole = watch("role");

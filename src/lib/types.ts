@@ -28,6 +28,53 @@ export type IntroductionType = "PARTNER_INTRODUCTION" | "MENTOR_SESSION";
 export type IntroductionStatus = "PENDING" | "IN_PROGRESS" | "COMPLETED" | "DECLINED";
 export type Urgency = "LOW" | "MEDIUM" | "HIGH";
 
+export type Sector =
+  | "FINTECH"
+  | "ECOMMERCE"
+  | "SAAS"
+  | "HEALTHCARE"
+  | "EDUCATION"
+  | "LOGISTICS"
+  | "FOOD_AND_BEVERAGE"
+  | "REAL_ESTATE"
+  | "MARKETING"
+  | "CONSULTING"
+  | "MANUFACTURING"
+  | "TOURISM"
+  | "MEDIA"
+  | "OTHER";
+
+export type BusinessStage =
+  | "IDEA"
+  | "PRE_SEED"
+  | "SEED"
+  | "EARLY_REVENUE"
+  | "GROWTH"
+  | "ESTABLISHED";
+
+export type IndustryFocus =
+  | "TECHNOLOGY"
+  | "FINANCE"
+  | "HEALTHCARE"
+  | "OPERATIONS"
+  | "MARKETING_SALES"
+  | "LEGAL"
+  | "HUMAN_RESOURCES"
+  | "STRATEGY"
+  | "PRODUCT"
+  | "OTHER";
+
+export type Country =
+  | "BAHRAIN"
+  | "KSA"
+  | "UAE"
+  | "QATAR"
+  | "KUWAIT"
+  | "OMAN"
+  | "WORLDWIDE";
+
+export type Language = "ARABIC" | "ENGLISH" | "HINDI" | "URDU" | "TAGALOG" | "FRENCH";
+
 // ─── Users ──────────────────────────────────────────────────────────────────
 
 export interface AdminUser {
@@ -40,11 +87,11 @@ export interface AdminUser {
   subscriptionActive: boolean;
   emailVerified: boolean;
   isActive: boolean;
+  isSuperAdmin: boolean;
+  receiveIntroNotifications: boolean;
   createdAt: string;
   updatedAt: string;
-  startupProfile?: StartupProfile | null;
-  mentorProfile?: MentorProfile | null;
-  partnerProfile?: PartnerProfile | null;
+  profile?: StartupProfile | MentorProfile | PartnerProfile | null;
 }
 
 // ─── Profiles ───────────────────────────────────────────────────────────────
@@ -54,10 +101,13 @@ export interface StartupProfile {
   userId: string;
   companyName: string;
   description?: string | null;
-  industry?: string | null;
+  sector?: Sector | null;
+  businessStage?: BusinessStage | null;
+  locations: Country[];
   website?: string | null;
   logoUrl?: string | null;
   status: ProfileStatus;
+  isPubliclyVisible: boolean;
   createdAt: string;
   updatedAt: string;
 }
@@ -67,10 +117,14 @@ export interface MentorProfile {
   userId: string;
   title?: string | null;
   expertise: string[];
+  industryFocus: IndustryFocus[];
+  languages: Language[];
   bio?: string | null;
+  discountNote?: string | null;
   linkedinUrl?: string | null;
   photoUrl?: string | null;
   status: ProfileStatus;
+  isPubliclyVisible: boolean;
   createdAt: string;
   updatedAt: string;
 }
@@ -80,34 +134,51 @@ export interface PartnerProfile {
   userId: string;
   companyName: string;
   description?: string | null;
+  serviceCategory?: Sector | null;
   website?: string | null;
   logoUrl?: string | null;
   discountDescription: string;
   discountCode?: string | null;
   status: ProfileStatus;
+  isPubliclyVisible: boolean;
   createdAt: string;
   updatedAt: string;
 }
 
 // ─── Directory (public-facing) ──────────────────────────────────────────────
 
+export interface StartupListing {
+  id: string;
+  companyName: string;
+  description?: string | null;
+  sector?: Sector | null;
+  businessStage?: BusinessStage | null;
+  locations: Country[];
+  website?: string | null;
+  logoUrl?: string | null;
+}
+
 export interface PartnerListing {
   id: string;
   companyName: string;
   description?: string | null;
+  serviceCategory?: Sector | null;
   website?: string | null;
   logoUrl?: string | null;
   discountDescription?: string | null; // null if not subscribed
   discountCode?: string | null;
+  discountLocked?: boolean;
 }
 
 export interface MentorListing {
   id: string;
-  firstName: string;
-  lastName: string;
+  name: string;
   title?: string | null;
   expertise: string[];
+  industryFocus: IndustryFocus[];
+  languages: Language[];
   bio?: string | null;
+  discountNote?: string | null;
   photoUrl?: string | null;
 }
 
@@ -162,8 +233,27 @@ export interface Introduction {
   urgency: Urgency;
   context?: string | null;
   adminNotes?: string | null;
+  completedAt?: string | null;
   createdAt: string;
   updatedAt: string;
   requester?: { id: string; firstName: string; lastName: string; email: string };
-  target?: { id: string; firstName: string; lastName: string; email: string };
+  target?: { id: string; firstName: string; lastName: string; email?: string; role?: Role };
+}
+
+// ─── Analytics ──────────────────────────────────────────────────────────────
+
+export interface AnalyticsOverview {
+  users: { total: number; byRole: Record<Role, number> };
+  pendingApprovals: { startups: number; mentors: number; partners: number; total: number };
+  subscriptions: { active: number; expired: number; pendingPayment: number };
+  introductions: {
+    pending: number;
+    inProgress: number;
+    completed: number;
+    declined: number;
+    total: number;
+  };
+  resources: { active: number; archived: number; public: number; membersOnly: number };
+  newSignupsLast30Days: number;
+  generatedAt: string;
 }

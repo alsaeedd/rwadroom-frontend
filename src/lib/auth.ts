@@ -21,6 +21,9 @@ export interface User {
   status: UserStatus;
   subscriptionActive: boolean;
   emailVerified: boolean;
+  isActive: boolean;
+  isSuperAdmin: boolean;
+  receiveIntroNotifications: boolean;
   createdAt: string;
 }
 

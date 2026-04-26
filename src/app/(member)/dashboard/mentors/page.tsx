@@ -8,6 +8,7 @@ import { Spinner } from "@/components/ui/spinner";
 import { Pagination } from "@/components/ui/pagination";
 import { EmptyState } from "@/components/ui/empty-state";
 import { usePaginatedQuery } from "@/lib/hooks/use-paginated-query";
+import { INDUSTRY_FOCUS_LABEL, LANGUAGE_LABEL } from "@/lib/enums";
 import type { MentorListing } from "@/lib/types";
 import { GraduationCap } from "lucide-react";
 
@@ -38,14 +39,14 @@ export default function MentorsPage() {
               <Card key={m.id} className="cursor-pointer hover:shadow-lg transition-all duration-200" onClick={() => router.push(`/dashboard/mentors/${m.id}`)}>
                 <div className="flex items-center gap-3 mb-3">
                   {m.photoUrl ? (
-                    <img src={m.photoUrl} alt={`${m.firstName} ${m.lastName}`} className="h-12 w-12 rounded-full object-cover" />
+                    <img src={m.photoUrl} alt={m.name} className="h-12 w-12 rounded-full object-cover" />
                   ) : (
                     <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/8">
                       <GraduationCap className="h-5 w-5 text-primary" />
                     </div>
                   )}
                   <div>
-                    <h3 className="font-semibold">{m.firstName} {m.lastName}</h3>
+                    <h3 className="font-semibold">{m.name}</h3>
                     {m.title && <p className="text-xs text-muted">{m.title}</p>}
                   </div>
                 </div>
@@ -56,6 +57,18 @@ export default function MentorsPage() {
                     ))}
                     {m.expertise.length > 3 && <Badge variant="neutral">+{m.expertise.length - 3}</Badge>}
                   </div>
+                )}
+                {m.industryFocus.length > 0 && (
+                  <div className="flex flex-wrap gap-1 mb-2">
+                    {m.industryFocus.slice(0, 2).map((i) => (
+                      <Badge key={i} variant="info">{INDUSTRY_FOCUS_LABEL[i]}</Badge>
+                    ))}
+                  </div>
+                )}
+                {m.languages.length > 0 && (
+                  <p className="text-xs text-muted mb-2">
+                    Speaks {m.languages.map((l) => LANGUAGE_LABEL[l]).join(", ")}
+                  </p>
                 )}
                 {m.bio && <p className="text-xs text-muted line-clamp-2">{m.bio}</p>}
               </Card>

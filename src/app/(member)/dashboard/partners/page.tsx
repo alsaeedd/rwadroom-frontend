@@ -9,6 +9,7 @@ import { Pagination } from "@/components/ui/pagination";
 import { EmptyState } from "@/components/ui/empty-state";
 import { usePaginatedQuery } from "@/lib/hooks/use-paginated-query";
 import { useAuthStore } from "@/lib/auth";
+import { SECTOR_LABEL } from "@/lib/enums";
 import type { PartnerListing } from "@/lib/types";
 import { Handshake, Lock } from "lucide-react";
 
@@ -38,7 +39,7 @@ export default function PartnersPage() {
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {data.map((p) => (
               <Card key={p.id} className="cursor-pointer hover:shadow-lg transition-all duration-200" onClick={() => router.push(`/dashboard/partners/${p.id}`)}>
-                <div className="flex items-center gap-3 mb-3">
+                <div className="flex items-start gap-3 mb-3">
                   {p.logoUrl ? (
                     <img src={p.logoUrl} alt={p.companyName} className="h-12 w-12 rounded-xl object-cover" />
                   ) : (
@@ -46,7 +47,12 @@ export default function PartnersPage() {
                       <Handshake className="h-5 w-5 text-primary" />
                     </div>
                   )}
-                  <h3 className="font-semibold">{p.companyName}</h3>
+                  <div className="min-w-0 flex-1">
+                    <h3 className="font-semibold truncate">{p.companyName}</h3>
+                    {p.serviceCategory && (
+                      <p className="text-xs text-muted">{SECTOR_LABEL[p.serviceCategory]}</p>
+                    )}
+                  </div>
                 </div>
                 {p.description && <p className="text-xs text-muted line-clamp-2 mb-3">{p.description}</p>}
                 {subscriptionActive && p.discountDescription ? (

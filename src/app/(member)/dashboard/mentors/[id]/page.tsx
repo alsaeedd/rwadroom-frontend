@@ -12,8 +12,9 @@ import { Select } from "@/components/ui/select";
 import { Alert } from "@/components/ui/alert";
 import { useAuthStore } from "@/lib/auth";
 import { api, ApiError } from "@/lib/api";
+import { INDUSTRY_FOCUS_LABEL, LANGUAGE_LABEL } from "@/lib/enums";
 import type { MentorListing } from "@/lib/types";
-import { ArrowLeft, GraduationCap, Linkedin } from "lucide-react";
+import { ArrowLeft, GraduationCap, Sparkles } from "lucide-react";
 
 export default function MentorDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -42,7 +43,13 @@ export default function MentorDetailPage() {
     try {
       await api("/introductions", {
         method: "POST",
-        body: JSON.stringify({ targetId: id, type: "MENTOR_SESSION", purpose, urgency, context: context || undefined }),
+        body: JSON.stringify({
+          targetId: id,
+          type: "MENTOR_SESSION",
+          purpose,
+          urgency,
+          context: context || undefined,
+        }),
       });
       setSessionModal(false);
       setSuccess("Session request submitted! Our team will coordinate the booking.");
@@ -53,40 +60,110 @@ export default function MentorDetailPage() {
     }
   };
 
-  if (loading) return <div className="flex justify-center py-20"><Spinner className="h-8 w-8" /></div>;
-  if (!mentor) return <div className="py-10 text-center text-muted">{error || "Mentor not found."}</div>;
+  if (loading) {
+    return (
+      <div className="flex justify-center py-20">
+        <Spinner className="h-8 w-8" />
+      </div>
+    );
+  }
+  if (!mentor) {
+    return <div className="py-10 text-center text-muted">{error || "Mentor not found."}</div>;
+  }
 
   return (
     <div>
-      <button onClick={() => router.push("/dashboard/mentors")} className="inline-flex items-center gap-2 text-sm font-medium text-primary hover:text-primary/80 transition-colors mb-6 cursor-pointer">
+      <button
+        onClick={() => router.push("/dashboard/mentors")}
+        className="inline-flex items-center gap-2 text-sm font-medium text-primary hover:text-primary/80 transition-colors mb-6 cursor-pointer"
+      >
         <ArrowLeft className="h-4 w-4" /> Back to Mentors
       </button>
 
-      {success && <Alert variant="success" className="mb-5">{success}</Alert>}
-      {error && <Alert variant="error" className="mb-5">{error}</Alert>}
+      {success && (
+        <Alert variant="success" className="mb-5">
+          {success}
+        </Alert>
+      )}
+      {error && (
+        <Alert variant="error" className="mb-5">
+          {error}
+        </Alert>
+      )}
 
       <Card className="max-w-2xl">
         <div className="flex items-center gap-4 mb-6">
           {mentor.photoUrl ? (
-            <img src={mentor.photoUrl} alt={`${mentor.firstName} ${mentor.lastName}`} className="h-20 w-20 rounded-full object-cover" />
+            <img
+              src={mentor.photoUrl}
+              alt={mentor.name}
+              className="h-20 w-20 rounded-full object-cover"
+            />
           ) : (
             <div className="flex h-20 w-20 items-center justify-center rounded-full bg-primary/8">
               <GraduationCap className="h-8 w-8 text-primary" />
             </div>
           )}
           <div>
-            <h1 className="text-xl font-bold">{mentor.firstName} {mentor.lastName}</h1>
+            <h1 className="text-xl font-bold">{mentor.name}</h1>
             {mentor.title && <p className="text-sm text-muted">{mentor.title}</p>}
           </div>
         </div>
 
         {mentor.expertise.length > 0 && (
-          <div className="flex flex-wrap gap-1.5 mb-4">
-            {mentor.expertise.map((e) => <Badge key={e} variant="info">{e}</Badge>)}
+          <div className="mb-4">
+            <p className="text-xs font-semibold uppercase tracking-wide text-muted mb-2">
+              Expertise
+            </p>
+            <div className="flex flex-wrap gap-1.5">
+              {mentor.expertise.map((e) => (
+                <Badge key={e} variant="info">
+                  {e}
+                </Badge>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {mentor.industryFocus.length > 0 && (
+          <div className="mb-4">
+            <p className="text-xs font-semibold uppercase tracking-wide text-muted mb-2">
+              Industry Focus
+            </p>
+            <div className="flex flex-wrap gap-1.5">
+              {mentor.industryFocus.map((i) => (
+                <Badge key={i} variant="neutral">
+                  {INDUSTRY_FOCUS_LABEL[i]}
+                </Badge>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {mentor.languages.length > 0 && (
+          <div className="mb-4">
+            <p className="text-xs font-semibold uppercase tracking-wide text-muted mb-2">
+              Languages
+            </p>
+            <p className="text-sm">{mentor.languages.map((l) => LANGUAGE_LABEL[l]).join(" · ")}</p>
           </div>
         )}
 
         {mentor.bio && <p className="text-sm text-muted leading-relaxed mb-6">{mentor.bio}</p>}
+
+        {mentor.discountNote && (
+          <div className="mb-6 rounded-xl bg-accent/8 border border-accent/20 px-4 py-3">
+            <div className="flex items-start gap-2">
+              <Sparkles className="h-4 w-4 text-accent shrink-0 mt-0.5" />
+              <div>
+                <p className="text-xs font-semibold text-accent uppercase tracking-wide mb-0.5">
+                  Community Offer
+                </p>
+                <p className="text-sm text-foreground">{mentor.discountNote}</p>
+              </div>
+            </div>
+          </div>
+        )}
 
         {subscriptionActive && (
           <Button size="lg" onClick={() => setSessionModal(true)}>
@@ -96,19 +173,58 @@ export default function MentorDetailPage() {
         {!subscriptionActive && (
           <div className="rounded-xl bg-muted/5 border border-border px-5 py-4">
             <p className="text-sm font-medium">Subscribe to request mentor sessions.</p>
-            <Button size="sm" className="mt-2" onClick={() => router.push("/dashboard/subscription")}>Subscribe</Button>
+            <Button
+              size="sm"
+              className="mt-2"
+              onClick={() => router.push("/dashboard/subscription")}
+            >
+              Subscribe
+            </Button>
           </div>
         )}
       </Card>
 
-      <Modal open={sessionModal} onClose={() => setSessionModal(false)} title="Request Mentor Session">
+      <Modal
+        open={sessionModal}
+        onClose={() => setSessionModal(false)}
+        title="Request Mentor Session"
+      >
         <div className="flex flex-col gap-4">
-          <Textarea label="Purpose" placeholder="What would you like to discuss?" value={purpose} onChange={(e) => setPurpose(e.target.value)} />
-          <Select label="Urgency" options={[{ value: "LOW", label: "Low" }, { value: "MEDIUM", label: "Medium" }, { value: "HIGH", label: "High" }]} value={urgency} onChange={(e) => setUrgency(e.target.value)} />
-          <Textarea label="Additional Context (optional)" placeholder="Any extra details..." value={context} onChange={(e) => setContext(e.target.value)} />
+          <Textarea
+            label="Purpose"
+            placeholder="What would you like to discuss?"
+            value={purpose}
+            onChange={(e) => setPurpose(e.target.value)}
+            maxLength={1000}
+          />
+          <Select
+            label="Urgency"
+            options={[
+              { value: "LOW", label: "Low" },
+              { value: "MEDIUM", label: "Medium" },
+              { value: "HIGH", label: "High" },
+            ]}
+            value={urgency}
+            onChange={(e) => setUrgency(e.target.value)}
+          />
+          <Textarea
+            label="Additional Context (optional)"
+            placeholder="Any extra details..."
+            value={context}
+            onChange={(e) => setContext(e.target.value)}
+            maxLength={2000}
+          />
           <div className="flex gap-3 justify-end pt-2">
-            <Button variant="ghost" onClick={() => setSessionModal(false)}>Cancel</Button>
-            <Button isLoading={sending} disabled={!purpose.trim()} onClick={handleRequestSession}>Submit Request</Button>
+            <Button variant="ghost" onClick={() => setSessionModal(false)}>
+              Cancel
+            </Button>
+            <Button
+              isLoading={sending}
+              disabled={!purpose.trim() || purpose.trim().length < 10}
+              onClick={handleRequestSession}
+            >
+              Submit Request
+            </Button>
           </div>
         </div>
       </Modal>
