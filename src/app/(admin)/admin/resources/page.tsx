@@ -11,7 +11,7 @@ import { Modal } from "@/components/ui/modal";
 import { usePaginatedQuery } from "@/lib/hooks/use-paginated-query";
 import { api, ApiError } from "@/lib/api";
 import type { Resource } from "@/lib/types";
-import { Plus, Pencil, Archive, Trash2, ExternalLink, FileIcon } from "lucide-react";
+import { ArchiveRestore, Plus, Pencil, Archive, Trash2, ExternalLink, FileIcon } from "lucide-react";
 import { useState } from "react";
 import Link from "next/link";
 
@@ -58,6 +58,16 @@ export default function AdminResourcesPage() {
       refresh();
     } catch (err) {
       setError(err instanceof ApiError ? err.message : "Archive failed.");
+    }
+  };
+
+  const handleUnarchive = async (resource: Resource) => {
+    try {
+      await api(`/admin/resources/${resource.id}/unarchive`, { method: "PATCH" });
+      setSuccess("Resource restored.");
+      refresh();
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : "Restore failed.");
     }
   };
 
@@ -111,9 +121,13 @@ export default function AdminResourcesPage() {
           <Button variant="ghost" size="sm" onClick={() => router.push(`/admin/resources/${r.id}/edit`)}>
             <Pencil className="h-3.5 w-3.5" />
           </Button>
-          {r.status === "ACTIVE" && (
-            <Button variant="ghost" size="sm" onClick={() => handleArchive(r)}>
+          {r.status === "ACTIVE" ? (
+            <Button variant="ghost" size="sm" onClick={() => handleArchive(r)} title="Archive">
               <Archive className="h-3.5 w-3.5" />
+            </Button>
+          ) : (
+            <Button variant="ghost" size="sm" onClick={() => handleUnarchive(r)} title="Restore">
+              <ArchiveRestore className="h-3.5 w-3.5" />
             </Button>
           )}
           <Button variant="ghost" size="sm" onClick={() => setDeleteModal(r)} className="text-danger hover:text-danger">

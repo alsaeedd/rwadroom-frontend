@@ -29,8 +29,10 @@ export default function ResourceDetailPage() {
 
   const handleDownload = async () => {
     try {
-      const result = await api<{ url: string }>(`/resources/${id}/download`);
-      if (result.url) window.open(result.url, "_blank");
+      const result = await api<{ downloadUrl: string; fileName: string; expiresInSeconds: number }>(
+        `/resources/${id}/download`,
+      );
+      if (result.downloadUrl) window.open(result.downloadUrl, "_blank");
     } catch (err) {
       setError(err instanceof ApiError ? err.message : "Download failed.");
     }
