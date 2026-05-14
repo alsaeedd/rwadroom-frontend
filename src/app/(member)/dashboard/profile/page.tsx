@@ -16,6 +16,7 @@ import { Badge } from "@/components/ui/badge";
 import { Spinner } from "@/components/ui/spinner";
 import { api, apiUpload, ApiError } from "@/lib/api";
 import {
+  BUSINESS_STAGE_DESCRIPTION,
   BUSINESS_STAGE_OPTIONS,
   COUNTRY_OPTIONS,
   PROFILE_STATUS_LABEL,
@@ -52,11 +53,14 @@ export default function StartupProfilePage() {
     handleSubmit,
     reset,
     control,
+    watch,
     formState: { errors, isSubmitting },
   } = useForm<ProfileForm>({
     resolver: zodResolver(schema),
     defaultValues: { locations: ["BAHRAIN"] },
   });
+
+  const selectedStage = watch("businessStage");
 
   useEffect(() => {
     api<StartupProfile>("/users/profile")
@@ -179,7 +183,7 @@ export default function StartupProfilePage() {
               error={errors.description?.message}
               {...register("description")}
             />
-            <div className="grid gap-5 sm:grid-cols-2">
+            <div className="grid gap-5 sm:grid-cols-2 sm:items-start">
               <Select
                 label="Sector / Category"
                 placeholder="Select a sector"
@@ -187,13 +191,20 @@ export default function StartupProfilePage() {
                 error={errors.sector?.message}
                 {...register("sector")}
               />
-              <Select
-                label="Business Stage"
-                placeholder="Select a stage"
-                options={BUSINESS_STAGE_OPTIONS}
-                error={errors.businessStage?.message}
-                {...register("businessStage")}
-              />
+              <div className="flex flex-col gap-2">
+                <Select
+                  label="Business Stage"
+                  placeholder="Select a stage"
+                  options={BUSINESS_STAGE_OPTIONS}
+                  error={errors.businessStage?.message}
+                  {...register("businessStage")}
+                />
+                {selectedStage && BUSINESS_STAGE_DESCRIPTION[selectedStage as keyof typeof BUSINESS_STAGE_DESCRIPTION] && (
+                  <p className="text-xs leading-relaxed text-muted -mt-0.5 pl-0.5">
+                    {BUSINESS_STAGE_DESCRIPTION[selectedStage as keyof typeof BUSINESS_STAGE_DESCRIPTION]}
+                  </p>
+                )}
+              </div>
             </div>
             <Controller
               control={control}

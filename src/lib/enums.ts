@@ -45,6 +45,17 @@ export const BUSINESS_STAGE_LABEL: Record<BusinessStage, string> = {
   ESTABLISHED: "Established",
 };
 
+// Plain-English one-liners shown under the dropdown so founders know
+// which stage actually describes them. Kept short and jargon-light.
+export const BUSINESS_STAGE_DESCRIPTION: Record<BusinessStage, string> = {
+  IDEA: "Validating the idea — no product or revenue yet.",
+  PRE_SEED: "Building a prototype with founder savings, friends, or angel money.",
+  SEED: "First external funding raised; building and launching the MVP.",
+  EARLY_REVENUE: "First paying customers; finding product-market fit.",
+  GROWTH: "Repeatable revenue; scaling team, customers, and operations.",
+  ESTABLISHED: "Profitable or at scale; expanding products or markets.",
+};
+
 export const BUSINESS_STAGE_OPTIONS: { value: BusinessStage; label: string }[] = (
   Object.keys(BUSINESS_STAGE_LABEL) as BusinessStage[]
 ).map((value) => ({ value, label: BUSINESS_STAGE_LABEL[value] }));
