@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select } from "@/components/ui/select";
 import { ChipMultiSelect } from "@/components/ui/chip-multi-select";
+import { DescriptiveSelect } from "@/components/ui/descriptive-select";
 import { Button } from "@/components/ui/button";
 import { FileUpload } from "@/components/ui/file-upload";
 import { Alert } from "@/components/ui/alert";
@@ -16,7 +17,7 @@ import { Badge } from "@/components/ui/badge";
 import { Spinner } from "@/components/ui/spinner";
 import { api, apiUpload, ApiError } from "@/lib/api";
 import {
-  BUSINESS_STAGE_DESCRIPTION,
+  BUSINESS_STAGE_DESCRIBED_OPTIONS,
   BUSINESS_STAGE_OPTIONS,
   COUNTRY_OPTIONS,
   PROFILE_STATUS_LABEL,
@@ -53,14 +54,11 @@ export default function StartupProfilePage() {
     handleSubmit,
     reset,
     control,
-    watch,
     formState: { errors, isSubmitting },
   } = useForm<ProfileForm>({
     resolver: zodResolver(schema),
     defaultValues: { locations: ["BAHRAIN"] },
   });
-
-  const selectedStage = watch("businessStage");
 
   useEffect(() => {
     api<StartupProfile>("/users/profile")
@@ -191,20 +189,20 @@ export default function StartupProfilePage() {
                 error={errors.sector?.message}
                 {...register("sector")}
               />
-              <div className="flex flex-col gap-2">
-                <Select
-                  label="Business Stage"
-                  placeholder="Select a stage"
-                  options={BUSINESS_STAGE_OPTIONS}
-                  error={errors.businessStage?.message}
-                  {...register("businessStage")}
-                />
-                {selectedStage && BUSINESS_STAGE_DESCRIPTION[selectedStage as keyof typeof BUSINESS_STAGE_DESCRIPTION] && (
-                  <p className="text-xs leading-relaxed text-muted -mt-0.5 pl-0.5">
-                    {BUSINESS_STAGE_DESCRIPTION[selectedStage as keyof typeof BUSINESS_STAGE_DESCRIPTION]}
-                  </p>
+              <Controller
+                control={control}
+                name="businessStage"
+                render={({ field }) => (
+                  <DescriptiveSelect<BusinessStage>
+                    label="Business Stage"
+                    placeholder="Select a stage"
+                    options={BUSINESS_STAGE_DESCRIBED_OPTIONS}
+                    value={(field.value as BusinessStage) ?? ""}
+                    onChange={field.onChange}
+                    error={errors.businessStage?.message}
+                  />
                 )}
-              </div>
+              />
             </div>
             <Controller
               control={control}

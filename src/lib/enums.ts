@@ -60,6 +60,17 @@ export const BUSINESS_STAGE_OPTIONS: { value: BusinessStage; label: string }[] =
   Object.keys(BUSINESS_STAGE_LABEL) as BusinessStage[]
 ).map((value) => ({ value, label: BUSINESS_STAGE_LABEL[value] }));
 
+// Same options, but with descriptions attached — for descriptive dropdowns.
+export const BUSINESS_STAGE_DESCRIBED_OPTIONS: {
+  value: BusinessStage;
+  label: string;
+  description: string;
+}[] = (Object.keys(BUSINESS_STAGE_LABEL) as BusinessStage[]).map((value) => ({
+  value,
+  label: BUSINESS_STAGE_LABEL[value],
+  description: BUSINESS_STAGE_DESCRIPTION[value],
+}));
+
 export const INDUSTRY_FOCUS_LABEL: Record<IndustryFocus, string> = {
   TECHNOLOGY: "Technology",
   FINANCE: "Finance",
