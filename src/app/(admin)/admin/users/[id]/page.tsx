@@ -40,7 +40,8 @@ import {
   XCircle,
 } from "lucide-react";
 
-const userStatusVariant: Record<UserStatus, "success" | "warning" | "danger"> = {
+const userStatusVariant: Record<UserStatus, "success" | "warning" | "danger" | "neutral"> = {
+  INCOMPLETE: "neutral",
   APPROVED: "success",
   PENDING: "warning",
   REJECTED: "danger",

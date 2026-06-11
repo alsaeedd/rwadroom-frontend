@@ -14,6 +14,7 @@ import { Alert } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Spinner } from "@/components/ui/spinner";
 import { api, apiUpload, ApiError } from "@/lib/api";
+import { useAuthStore } from "@/lib/auth";
 import { PROFILE_STATUS_LABEL, SECTOR_OPTIONS } from "@/lib/enums";
 import type { PartnerProfile, Sector } from "@/lib/types";
 
@@ -37,6 +38,7 @@ export default function PartnerProfilePage() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [visibilityBusy, setVisibilityBusy] = useState(false);
+  const fetchUser = useAuthStore((s) => s.fetchUser);
 
   const {
     register,
@@ -80,7 +82,9 @@ export default function PartnerProfilePage() {
       });
       setProfile(result);
       setIsCreate(false);
-      setSuccess(isCreate ? "Profile created. Awaiting admin approval." : "Profile updated.");
+      // Invited partners are pre-approved, so their profile goes live on create.
+      setSuccess(isCreate ? "Profile created and published." : "Profile updated.");
+      await fetchUser();
     } catch (err) {
       setError(err instanceof ApiError ? err.message : "Failed to save profile.");
     }

@@ -162,7 +162,7 @@ export default function PartnerDashboardPage() {
                 {profile.status === "PENDING"
                   ? "An admin will review your profile shortly."
                   : profile.status === "REJECTED"
-                    ? "Your profile is currently hidden. Update your details and reach out to support."
+                    ? "Your profile wasn't approved yet — check your email for details. Update it and save to resubmit for review."
                     : profile.isPubliclyVisible
                       ? "Your company appears in the public partners directory."
                       : "You&rsquo;ve hidden your company from the public directory."}

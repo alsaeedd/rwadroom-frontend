@@ -17,7 +17,7 @@ export interface PaginatedResponse<T> {
 // ─── Enums ──────────────────────────────────────────────────────────────────
 
 export type Role = "STARTUP" | "MENTOR" | "PARTNER" | "ADMIN";
-export type UserStatus = "PENDING" | "APPROVED" | "REJECTED";
+export type UserStatus = "INCOMPLETE" | "PENDING" | "APPROVED" | "REJECTED";
 export type ProfileStatus = "PENDING" | "APPROVED" | "REJECTED";
 export type SubscriptionStatus = "PENDING_PAYMENT" | "ACTIVE" | "EXPIRED" | "CANCELLED";
 export type PaymentStatus = "PENDING" | "COMPLETED" | "FAILED" | "REFUNDED";

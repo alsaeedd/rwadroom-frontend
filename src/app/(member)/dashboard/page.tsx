@@ -86,6 +86,10 @@ export default function StartupDashboardPage() {
     ? Math.max(0, Math.ceil((periodEnd.getTime() - Date.now()) / (24 * 60 * 60 * 1000)))
     : 0;
 
+  const isIncomplete = user?.status === "INCOMPLETE";
+  const isRejected = user?.status === "REJECTED";
+  const needsProfileAction = isIncomplete || isRejected;
+
   return (
     <div className="space-y-8">
       {/* Hero — branded gradient with personalized greeting */}
@@ -94,37 +98,61 @@ export default function StartupDashboardPage() {
         <div className="absolute -left-8 bottom-0 h-32 w-32 rounded-full bg-white/10 blur-2xl" />
         <div className="relative">
           <p className="text-xs font-semibold uppercase tracking-[0.16em] text-white/60 mb-2">
-            {greetingForTime()}
+            {isIncomplete
+              ? "Getting started"
+              : isRejected
+                ? "Action needed"
+                : greetingForTime()}
           </p>
           <h1 className="text-3xl sm:text-4xl font-bold tracking-tight">
-            Welcome back, {user?.firstName}
+            {isIncomplete
+              ? `Welcome, ${user?.firstName} 👋`
+              : isRejected
+                ? "Your profile needs a few changes"
+                : `Welcome back, ${user?.firstName}`}
           </h1>
           <p className="text-white/70 mt-3 max-w-xl">
-            {subActive
-              ? "Your community access is active. Explore partner discounts, request mentor sessions, and tap into the resources hub."
-              : "Activate your annual subscription to unlock partner discounts, mentor sessions, and the full resources library."}
+            {isIncomplete
+              ? "You're one step away. Complete your startup profile to submit for approval and unlock partner discounts, mentor sessions, and the resources hub."
+              : isRejected
+                ? "An admin reviewed your profile and it wasn't approved yet — check your email for the details. Update your profile and resubmit to get back in the queue."
+                : subActive
+                  ? "Your community access is active. Explore partner discounts, request mentor sessions, and tap into the resources hub."
+                  : "Activate your annual subscription to unlock partner discounts, mentor sessions, and the full resources library."}
           </p>
           <div className="mt-6 flex flex-wrap gap-3">
-            {!subActive && (
+            {needsProfileAction ? (
               <Link
-                href="/dashboard/subscription"
+                href="/dashboard/profile"
                 className="inline-flex items-center gap-2 rounded-xl bg-accent px-5 py-2.5 text-sm font-semibold text-white shadow-lg hover:bg-accent/90 transition-all"
               >
-                <CreditCard className="h-4 w-4" /> Activate Subscription
+                <ArrowRight className="h-4 w-4" />
+                {isRejected ? "Update & Resubmit Profile" : "Complete Your Profile"}
               </Link>
+            ) : (
+              <>
+                {!subActive && (
+                  <Link
+                    href="/dashboard/subscription"
+                    className="inline-flex items-center gap-2 rounded-xl bg-accent px-5 py-2.5 text-sm font-semibold text-white shadow-lg hover:bg-accent/90 transition-all"
+                  >
+                    <CreditCard className="h-4 w-4" /> Activate Subscription
+                  </Link>
+                )}
+                <Link
+                  href="/dashboard/partners"
+                  className="inline-flex items-center gap-2 rounded-xl bg-white/10 backdrop-blur-sm px-5 py-2.5 text-sm font-semibold text-white border border-white/20 hover:bg-white/15 transition-all"
+                >
+                  <Handshake className="h-4 w-4" /> Browse Partners
+                </Link>
+                <Link
+                  href="/dashboard/mentors"
+                  className="inline-flex items-center gap-2 rounded-xl bg-white/10 backdrop-blur-sm px-5 py-2.5 text-sm font-semibold text-white border border-white/20 hover:bg-white/15 transition-all"
+                >
+                  <GraduationCap className="h-4 w-4" /> Find a Mentor
+                </Link>
+              </>
             )}
-            <Link
-              href="/dashboard/partners"
-              className="inline-flex items-center gap-2 rounded-xl bg-white/10 backdrop-blur-sm px-5 py-2.5 text-sm font-semibold text-white border border-white/20 hover:bg-white/15 transition-all"
-            >
-              <Handshake className="h-4 w-4" /> Browse Partners
-            </Link>
-            <Link
-              href="/dashboard/mentors"
-              className="inline-flex items-center gap-2 rounded-xl bg-white/10 backdrop-blur-sm px-5 py-2.5 text-sm font-semibold text-white border border-white/20 hover:bg-white/15 transition-all"
-            >
-              <GraduationCap className="h-4 w-4" /> Find a Mentor
-            </Link>
           </div>
         </div>
       </div>

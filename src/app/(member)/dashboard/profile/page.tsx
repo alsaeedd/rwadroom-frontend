@@ -16,6 +16,7 @@ import { Alert } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Spinner } from "@/components/ui/spinner";
 import { api, apiUpload, ApiError } from "@/lib/api";
+import { useAuthStore } from "@/lib/auth";
 import {
   BUSINESS_STAGE_DESCRIBED_OPTIONS,
   BUSINESS_STAGE_OPTIONS,
@@ -48,6 +49,7 @@ export default function StartupProfilePage() {
   const [success, setSuccess] = useState("");
   const [uploading, setUploading] = useState(false);
   const [visibilityBusy, setVisibilityBusy] = useState(false);
+  const fetchUser = useAuthStore((s) => s.fetchUser);
 
   const {
     register,
@@ -93,7 +95,10 @@ export default function StartupProfilePage() {
       });
       setProfile(result);
       setIsCreate(false);
-      setSuccess(isCreate ? "Profile created. Awaiting admin approval." : "Profile updated.");
+      setSuccess(isCreate ? "Profile submitted for review." : "Profile updated.");
+      // Submitting/resubmitting flips the account status (INCOMPLETE/REJECTED ->
+      // PENDING). Refresh the cached user so the layout reflects the new state.
+      await fetchUser();
     } catch (err) {
       setError(err instanceof ApiError ? err.message : "Failed to save profile.");
     }

@@ -123,6 +123,7 @@ export const ROLE_LABEL: Record<Role, string> = {
 };
 
 export const USER_STATUS_LABEL: Record<UserStatus, string> = {
+  INCOMPLETE: "Incomplete",
   PENDING: "Pending",
   APPROVED: "Approved",
   REJECTED: "Rejected",

@@ -166,7 +166,7 @@ export default function MentorDashboardPage() {
                 {profile.status === "PENDING"
                   ? "An admin will review your profile shortly."
                   : profile.status === "REJECTED"
-                    ? "Your profile is currently hidden. Update your details and reach out to support."
+                    ? "Your profile wasn't approved yet — check your email for details. Update it and save to resubmit for review."
                     : profile.isPubliclyVisible
                       ? "You appear in the public mentor directory."
                       : "You&rsquo;ve hidden yourself from the public directory."}

@@ -10,7 +10,8 @@ import { usePaginatedQuery } from "@/lib/hooks/use-paginated-query";
 import type { AdminUser, Role, UserStatus } from "@/lib/types";
 import { Eye } from "lucide-react";
 
-const statusVariant: Record<UserStatus, "success" | "warning" | "danger"> = {
+const statusVariant: Record<UserStatus, "success" | "warning" | "danger" | "neutral"> = {
+  INCOMPLETE: "neutral",
   APPROVED: "success",
   PENDING: "warning",
   REJECTED: "danger",
@@ -26,6 +27,7 @@ const roleOptions = [
 
 const statusOptions = [
   { value: "", label: "All Statuses" },
+  { value: "INCOMPLETE", label: "Incomplete" },
   { value: "PENDING", label: "Pending" },
   { value: "APPROVED", label: "Approved" },
   { value: "REJECTED", label: "Rejected" },

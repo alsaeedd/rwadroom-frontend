@@ -10,7 +10,7 @@ function clearSessionCookie() {
 }
 
 export type Role = "STARTUP" | "MENTOR" | "PARTNER" | "ADMIN";
-export type UserStatus = "PENDING" | "APPROVED" | "REJECTED";
+export type UserStatus = "INCOMPLETE" | "PENDING" | "APPROVED" | "REJECTED";
 
 export interface User {
   id: string;
