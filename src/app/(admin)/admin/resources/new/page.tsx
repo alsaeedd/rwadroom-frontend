@@ -41,7 +41,7 @@ export default function NewResourcePage() {
   const resourceType = watch("type");
 
   useEffect(() => {
-    api<ResourceCategory[]>("/resources/categories")
+    api<ResourceCategory[]>("/admin/resources/categories")
       .then(setCategories)
       .catch(() => {});
   }, []);

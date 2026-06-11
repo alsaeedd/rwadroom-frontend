@@ -13,7 +13,7 @@ import { Alert } from "@/components/ui/alert";
 import { Spinner } from "@/components/ui/spinner";
 import { api, ApiError } from "@/lib/api";
 import type { ResourceCategory } from "@/lib/types";
-import { ArrowLeft, FolderOpen } from "lucide-react";
+import { ArrowLeft, FolderOpen, Trash2 } from "lucide-react";
 
 const schema = z.object({
   name: z.string().min(1, "Name is required").max(100),
@@ -37,13 +37,25 @@ export default function CategoriesPage() {
   });
 
   const fetchCategories = () => {
-    api<ResourceCategory[]>("/resources/categories")
+    api<ResourceCategory[]>("/admin/resources/categories")
       .then(setCategories)
       .catch(() => {})
       .finally(() => setLoading(false));
   };
 
   useEffect(() => { fetchCategories(); }, []);
+
+  const handleDelete = async (cat: ResourceCategory) => {
+    setError("");
+    setSuccess("");
+    try {
+      await api(`/admin/resources/categories/${cat.id}`, { method: "DELETE" });
+      setSuccess(`Deleted "${cat.name}".`);
+      fetchCategories();
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : "Failed to delete category.");
+    }
+  };
 
   const onSubmit = async (data: CategoryForm) => {
     setError("");
@@ -106,11 +118,20 @@ export default function CategoriesPage() {
             <div className="flex flex-col gap-2">
               {categories.map((cat) => (
                 <div key={cat.id} className="flex items-center justify-between rounded-xl border border-border px-4 py-3">
-                  <div>
+                  <div className="min-w-0">
                     <p className="font-medium text-sm">{cat.name}</p>
-                    <p className="text-xs text-muted">{cat.slug}{cat.description ? ` — ${cat.description}` : ""}</p>
+                    <p className="text-xs text-muted truncate">{cat.slug}{cat.description ? ` — ${cat.description}` : ""}</p>
                   </div>
-                  <span className="text-xs text-muted">#{cat.sortOrder}</span>
+                  <div className="flex items-center gap-3 shrink-0">
+                    <span className="text-xs text-muted">#{cat.sortOrder}</span>
+                    <button
+                      onClick={() => handleDelete(cat)}
+                      className="text-muted hover:text-danger transition-colors cursor-pointer"
+                      title="Delete category (only if empty)"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </button>
+                  </div>
                 </div>
               ))}
             </div>

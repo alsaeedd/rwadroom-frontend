@@ -41,7 +41,7 @@ export default function EditResourcePage() {
   useEffect(() => {
     Promise.all([
       api<Resource>(`/admin/resources/${id}`).catch(() => null),
-      api<ResourceCategory[]>("/resources/categories").catch(() => []),
+      api<ResourceCategory[]>("/admin/resources/categories").catch(() => []),
     ]).then(([r, cats]) => {
       setResource(r);
       setCategories(cats as ResourceCategory[]);
