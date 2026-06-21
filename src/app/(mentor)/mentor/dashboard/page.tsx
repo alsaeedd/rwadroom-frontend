@@ -15,6 +15,8 @@ import {
 import type { MentorProfile } from "@/lib/types";
 import {
   ArrowRight,
+  CalendarClock,
+  CalendarDays,
   CheckCircle2,
   Eye,
   EyeOff,
@@ -62,8 +64,8 @@ export default function MentorDashboardPage() {
           </h1>
           <p className="text-white/70 mt-3 max-w-xl">
             {isApproved
-              ? "Your profile is live. Startups can request sessions through the platform — our team will coordinate every introduction."
-              : "Once an admin approves your profile, you&rsquo;ll be listed in the public mentor directory."}
+              ? "Your profile is live. Set your weekly availability and subscribed startups can book sessions with you directly — each comes with a video link and calendar invite."
+              : "Once an admin approves your profile, you&rsquo;ll be listed in the public mentor directory and can open times for booking."}
           </p>
           <div className="mt-6 flex flex-wrap gap-3">
             <Link
@@ -72,6 +74,22 @@ export default function MentorDashboardPage() {
             >
               <UserCircle className="h-4 w-4" /> Edit Profile
             </Link>
+            {isApproved && (
+              <>
+                <Link
+                  href="/mentor/availability"
+                  className="inline-flex items-center gap-2 rounded-xl bg-white/10 px-5 py-2.5 text-sm font-semibold text-white hover:bg-white/15 transition-all"
+                >
+                  <CalendarClock className="h-4 w-4" /> Set Availability
+                </Link>
+                <Link
+                  href="/mentor/sessions"
+                  className="inline-flex items-center gap-2 rounded-xl bg-white/10 px-5 py-2.5 text-sm font-semibold text-white hover:bg-white/15 transition-all"
+                >
+                  <CalendarDays className="h-4 w-4" /> View Sessions
+                </Link>
+              </>
+            )}
           </div>
         </div>
       </div>
@@ -228,25 +246,31 @@ export default function MentorDashboardPage() {
       {/* How it works */}
       {profile && isApproved && (
         <Card>
-          <h3 className="font-semibold mb-3">How session requests work</h3>
+          <h3 className="font-semibold mb-3">How booking works</h3>
           <ol className="space-y-2.5 text-sm text-muted">
             <li className="flex gap-3">
               <span className="flex h-6 w-6 items-center justify-center rounded-full bg-primary/10 text-primary font-semibold shrink-0 text-xs">
                 1
               </span>
-              <span>A subscribed startup submits a session request through Rwad Room.</span>
+              <span>
+                You set your weekly availability — Rwad Room turns it into 30-minute slots for the
+                next two weeks.
+              </span>
             </li>
             <li className="flex gap-3">
               <span className="flex h-6 w-6 items-center justify-center rounded-full bg-primary/10 text-primary font-semibold shrink-0 text-xs">
                 2
               </span>
-              <span>The Rwad Room team reviews the purpose and reaches out to coordinate.</span>
+              <span>A subscribed startup picks an open slot and books it instantly.</span>
             </li>
             <li className="flex gap-3">
               <span className="flex h-6 w-6 items-center justify-center rounded-full bg-primary/10 text-primary font-semibold shrink-0 text-xs">
                 3
               </span>
-              <span>You and the startup connect off-platform — we handle the introduction.</span>
+              <span>
+                You both get a confirmation email with a video-call link and calendar invite — join
+                from your Sessions page at the scheduled time.
+              </span>
             </li>
           </ol>
         </Card>

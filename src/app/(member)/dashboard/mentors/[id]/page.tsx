@@ -8,13 +8,12 @@ import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 import { Modal } from "@/components/ui/modal";
 import { Textarea } from "@/components/ui/textarea";
-import { Select } from "@/components/ui/select";
 import { Alert } from "@/components/ui/alert";
 import { useAuthStore } from "@/lib/auth";
 import { api, ApiError } from "@/lib/api";
 import { INDUSTRY_FOCUS_LABEL, LANGUAGE_LABEL } from "@/lib/enums";
-import type { MentorListing } from "@/lib/types";
-import { ArrowLeft, GraduationCap, Sparkles } from "lucide-react";
+import type { MentorListing, BookingSlot, SlotsResponse } from "@/lib/types";
+import { ArrowLeft, GraduationCap, Sparkles, CalendarDays, Clock } from "lucide-react";
 
 export default function MentorDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -22,11 +21,14 @@ export default function MentorDetailPage() {
   const subscriptionActive = useAuthStore((s) => s.user?.subscriptionActive);
   const [mentor, setMentor] = useState<MentorListing | null>(null);
   const [loading, setLoading] = useState(true);
-  const [sessionModal, setSessionModal] = useState(false);
+
+  // Booking state
+  const [slots, setSlots] = useState<BookingSlot[]>([]);
+  const [slotsLoading, setSlotsLoading] = useState(false);
+  const [bookModal, setBookModal] = useState(false);
+  const [selectedSlot, setSelectedSlot] = useState<BookingSlot | null>(null);
   const [purpose, setPurpose] = useState("");
-  const [urgency, setUrgency] = useState("MEDIUM");
-  const [context, setContext] = useState("");
-  const [sending, setSending] = useState(false);
+  const [booking, setBooking] = useState(false);
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
 
@@ -37,27 +39,46 @@ export default function MentorDetailPage() {
       .finally(() => setLoading(false));
   }, [id]);
 
-  const handleRequestSession = async () => {
-    if (!mentor) return;
-    setSending(true);
+  // Load open slots once we know the mentor's user id and the viewer is subscribed.
+  useEffect(() => {
+    if (!mentor || !subscriptionActive) return;
+    setSlotsLoading(true);
+    api<SlotsResponse>(`/bookings/mentor/${mentor.userId}/slots`)
+      .then((r) => setSlots(r.slots))
+      .catch(() => setSlots([]))
+      .finally(() => setSlotsLoading(false));
+  }, [mentor, subscriptionActive]);
+
+  const openBooking = (slot: BookingSlot) => {
+    setSelectedSlot(slot);
+    setPurpose("");
+    setError("");
+    setBookModal(true);
+  };
+
+  const handleBook = async () => {
+    if (!mentor || !selectedSlot) return;
+    setBooking(true);
     setError("");
     try {
-      await api("/introductions", {
+      await api("/bookings", {
         method: "POST",
         body: JSON.stringify({
-          targetId: mentor.userId,
-          type: "MENTOR_SESSION",
-          purpose,
-          urgency,
-          context: context || undefined,
+          mentorId: mentor.userId,
+          scheduledAt: selectedSlot.start,
+          purpose: purpose.trim() || undefined,
         }),
       });
-      setSessionModal(false);
-      setSuccess("Session request submitted! Our team will coordinate the booking.");
+      setBookModal(false);
+      setSuccess(
+        `Your session is booked for ${selectedSlot.label} (Bahrain time). Check your email for the video link and calendar invite.`,
+      );
+      // Drop the slot we just took so the list stays accurate.
+      setSlots((prev) => prev.filter((s) => s.start !== selectedSlot.start));
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : "Request failed.");
+      setError(err instanceof ApiError ? err.message : "Booking failed.");
     } finally {
-      setSending(false);
+      setBooking(false);
     }
   };
 
@@ -71,6 +92,10 @@ export default function MentorDetailPage() {
   if (!mentor) {
     return <div className="py-10 text-center text-muted">{error || "Mentor not found."}</div>;
   }
+
+  // Group slots by calendar day for a tidier picker. The label starts with the
+  // weekday + date (e.g. "Sun, 22 Jun 2026, 14:00–14:30").
+  const slotsByDay = groupSlotsByDay(slots);
 
   return (
     <div>
@@ -86,7 +111,7 @@ export default function MentorDetailPage() {
           {success}
         </Alert>
       )}
-      {error && (
+      {error && !bookModal && (
         <Alert variant="error" className="mb-5">
           {error}
         </Alert>
@@ -166,14 +191,9 @@ export default function MentorDetailPage() {
           </div>
         )}
 
-        {subscriptionActive && (
-          <Button size="lg" onClick={() => setSessionModal(true)}>
-            <GraduationCap className="mr-2 h-4 w-4" /> Request Session
-          </Button>
-        )}
         {!subscriptionActive && (
           <div className="rounded-xl bg-muted/5 border border-border px-5 py-4">
-            <p className="text-sm font-medium">Subscribe to request mentor sessions.</p>
+            <p className="text-sm font-medium">Subscribe to book a session with this mentor.</p>
             <Button
               size="sm"
               className="mt-2"
@@ -185,50 +205,108 @@ export default function MentorDetailPage() {
         )}
       </Card>
 
-      <Modal
-        open={sessionModal}
-        onClose={() => setSessionModal(false)}
-        title="Request Mentor Session"
-      >
+      {/* Booking panel */}
+      {subscriptionActive && (
+        <Card className="max-w-2xl mt-6">
+          <div className="flex items-center gap-2 mb-4">
+            <CalendarDays className="h-5 w-5 text-primary" />
+            <h2 className="font-semibold">Book a session</h2>
+          </div>
+
+          {slotsLoading ? (
+            <div className="flex justify-center py-8">
+              <Spinner className="h-6 w-6" />
+            </div>
+          ) : slots.length === 0 ? (
+            <p className="text-sm text-muted">
+              This mentor has no open times right now. Check back soon — availability is updated
+              regularly.
+            </p>
+          ) : (
+            <div className="space-y-5">
+              <p className="text-sm text-muted">
+                Pick a 30-minute slot below. Times are shown in Bahrain time. You&rsquo;ll get a
+                video-call link and calendar invite by email.
+              </p>
+              {slotsByDay.map((group) => (
+                <div key={group.day}>
+                  <p className="text-xs font-semibold uppercase tracking-wide text-muted mb-2">
+                    {group.day}
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    {group.slots.map((slot) => (
+                      <button
+                        key={slot.start}
+                        onClick={() => openBooking(slot)}
+                        className="inline-flex items-center gap-1.5 rounded-xl border border-border px-3 py-2 text-sm font-medium hover:border-primary hover:bg-primary/5 hover:text-primary transition-colors cursor-pointer"
+                      >
+                        <Clock className="h-3.5 w-3.5" />
+                        {group.time(slot)}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </Card>
+      )}
+
+      <Modal open={bookModal} onClose={() => setBookModal(false)} title="Confirm your session">
         <div className="flex flex-col gap-4">
+          {selectedSlot && (
+            <div className="rounded-xl bg-primary/5 border border-primary/15 px-4 py-3">
+              <p className="text-xs font-semibold uppercase tracking-wide text-primary mb-1">
+                When (Bahrain time)
+              </p>
+              <p className="text-sm font-medium">{selectedSlot.label}</p>
+              <p className="text-xs text-muted mt-1">with {mentor.name}</p>
+            </div>
+          )}
+          {error && <Alert variant="error">{error}</Alert>}
           <Textarea
-            label="Purpose"
-            placeholder="What would you like to discuss?"
+            label="What would you like to discuss? (optional)"
+            placeholder="A sentence or two helps your mentor prepare."
             value={purpose}
             onChange={(e) => setPurpose(e.target.value)}
-            maxLength={1000}
-          />
-          <Select
-            label="Urgency"
-            options={[
-              { value: "LOW", label: "Low" },
-              { value: "MEDIUM", label: "Medium" },
-              { value: "HIGH", label: "High" },
-            ]}
-            value={urgency}
-            onChange={(e) => setUrgency(e.target.value)}
-          />
-          <Textarea
-            label="Additional Context (optional)"
-            placeholder="Any extra details..."
-            value={context}
-            onChange={(e) => setContext(e.target.value)}
-            maxLength={2000}
+            maxLength={500}
           />
           <div className="flex gap-3 justify-end pt-2">
-            <Button variant="ghost" onClick={() => setSessionModal(false)}>
+            <Button variant="ghost" onClick={() => setBookModal(false)}>
               Cancel
             </Button>
-            <Button
-              isLoading={sending}
-              disabled={!purpose.trim() || purpose.trim().length < 10}
-              onClick={handleRequestSession}
-            >
-              Submit Request
+            <Button isLoading={booking} onClick={handleBook}>
+              Confirm Booking
             </Button>
           </div>
         </div>
       </Modal>
     </div>
   );
+}
+
+// Splits "Sun, 22 Jun 2026, 14:00–14:30" into a day header and a time chip.
+function groupSlotsByDay(slots: BookingSlot[]) {
+  const groups: { day: string; slots: BookingSlot[]; time: (s: BookingSlot) => string }[] = [];
+  const byDay = new Map<string, BookingSlot[]>();
+
+  for (const slot of slots) {
+    const comma = slot.label.lastIndexOf(", ");
+    const day = comma > -1 ? slot.label.slice(0, comma) : slot.label;
+    if (!byDay.has(day)) byDay.set(day, []);
+    byDay.get(day)!.push(slot);
+  }
+
+  for (const [day, daySlots] of byDay) {
+    groups.push({
+      day,
+      slots: daySlots,
+      time: (s: BookingSlot) => {
+        const comma = s.label.lastIndexOf(", ");
+        return comma > -1 ? s.label.slice(comma + 2) : s.label;
+      },
+    });
+  }
+
+  return groups;
 }

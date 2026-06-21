@@ -22,6 +22,8 @@ import {
   BookOpen,
   GraduationCap,
   UserCircle,
+  CalendarDays,
+  CalendarClock,
 } from "lucide-react";
 
 // Dashboard root paths need exact match; sub-pages use startsWith
@@ -54,12 +56,15 @@ const navByRole: Record<Role, NavItem[]> = {
     { label: "Resources", href: "/dashboard/resources", icon: <BookOpen className="h-4 w-4" /> },
     { label: "Partners", href: "/dashboard/partners", icon: <Handshake className="h-4 w-4" /> },
     { label: "Mentors", href: "/dashboard/mentors", icon: <GraduationCap className="h-4 w-4" /> },
+    { label: "My Sessions", href: "/dashboard/sessions", icon: <CalendarDays className="h-4 w-4" /> },
     { label: "Introductions", href: "/dashboard/introductions", icon: <ArrowRightLeft className="h-4 w-4" /> },
     { label: "Change Password", href: "/dashboard/change-password", icon: <KeyRound className="h-4 w-4" /> },
   ],
   MENTOR: [
     { label: "Dashboard", href: "/mentor/dashboard", icon: <LayoutDashboard className="h-4 w-4" /> },
     { label: "My Profile", href: "/mentor/profile", icon: <UserCircle className="h-4 w-4" /> },
+    { label: "Availability", href: "/mentor/availability", icon: <CalendarClock className="h-4 w-4" /> },
+    { label: "Sessions", href: "/mentor/sessions", icon: <CalendarDays className="h-4 w-4" /> },
     { label: "Change Password", href: "/mentor/change-password", icon: <KeyRound className="h-4 w-4" /> },
   ],
   PARTNER: [

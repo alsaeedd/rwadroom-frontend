@@ -242,6 +242,62 @@ export interface Introduction {
   target?: { id: string; firstName: string; lastName: string; email?: string; role?: Role };
 }
 
+// ─── Bookings (on-platform mentor scheduling) ───────────────────────────────
+
+export type BookingStatus = "CONFIRMED" | "CANCELLED" | "COMPLETED";
+
+export interface AvailabilityWindow {
+  id?: string;
+  dayOfWeek: number; // 0 = Sunday … 6 = Saturday
+  startTime: string; // "HH:MM" Bahrain local
+  endTime: string; // "HH:MM" Bahrain local
+}
+
+export interface AvailabilityResponse {
+  windows: AvailabilityWindow[];
+}
+
+export interface BookingSlot {
+  start: string; // ISO-8601 UTC
+  label: string; // human-readable, Bahrain time
+}
+
+export interface SlotsResponse {
+  mentorId: string;
+  durationMin: number;
+  slots: BookingSlot[];
+}
+
+export interface Booking {
+  id: string;
+  scheduledAt: string;
+  durationMin: number;
+  status: BookingStatus;
+  purpose?: string | null;
+  meetingUrl: string;
+  whenLabel: string;
+  isPast: boolean;
+  cancelledBy?: string | null;
+  mentor: {
+    userId: string;
+    name: string;
+    title?: string | null;
+    photoUrl?: string | null;
+    email: string;
+  };
+  startup: {
+    userId: string;
+    name: string;
+    companyName?: string | null;
+    email: string;
+  };
+}
+
+export interface BookingsListResponse {
+  upcoming: Booking[];
+  past: Booking[];
+}
+
 // ─── Analytics ──────────────────────────────────────────────────────────────
 
 export interface AnalyticsOverview {
