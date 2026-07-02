@@ -53,7 +53,7 @@ export default function JoinPage() {
               Annual subscription
             </p>
             <p className="text-sm text-muted leading-relaxed mb-5">
-              Get listed in the community, request mentor sessions, unlock partner discounts, and
+              Get listed in the community, book mentor sessions, unlock partner discounts, and
               access the full resources library.
             </p>
             <ul className="space-y-2 mb-6 text-sm">
@@ -83,12 +83,12 @@ export default function JoinPage() {
               Listed free
             </p>
             <p className="text-sm text-muted leading-relaxed mb-5">
-              Be discoverable by Bahrain&rsquo;s most promising founders. Sessions are coordinated
-              by the Rwad Room team.
+              Be discoverable by Bahrain&rsquo;s most promising founders. Set your availability and
+              members book you directly.
             </p>
             <ul className="space-y-2 mb-6 text-sm">
               <Bullet>Free public listing</Bullet>
-              <Bullet>Admin-coordinated session requests</Bullet>
+              <Bullet>Members book your open time slots</Bullet>
               <Bullet>Showcase expertise + industry focus</Bullet>
               <Bullet>Optional community discount note</Bullet>
             </ul>
@@ -152,7 +152,7 @@ export default function JoinPage() {
             <Benefit
               icon={<GraduationCap className="h-5 w-5" />}
               title="Mentor sessions"
-              body="Request introductions to vetted mentors. We coordinate the booking."
+              body="Book 30-minute sessions with vetted mentors — pick an open slot and get a video link instantly."
             />
             <Benefit
               icon={<BookOpen className="h-5 w-5" />}
@@ -162,7 +162,7 @@ export default function JoinPage() {
             <Benefit
               icon={<Lock className="h-5 w-5" />}
               title="Private contact"
-              body="Your contact details stay private. Every introduction is admin-coordinated."
+              body="Your contact details aren’t listed publicly — they’re shared only when you book a session or an introduction is made."
             />
           </div>
         </div>
@@ -185,9 +185,9 @@ export default function JoinPage() {
           <Faq q="What does membership cost?">
             BHD 99 / year for SMEs. Mentors and partners are free.
           </Faq>
-          <Faq q="How are mentor sessions coordinated?">
-            Members request a session through the platform. The Rwad Room team coordinates the
-            booking offline. No public contact details are shared.
+          <Faq q="How do mentor sessions work?">
+            Subscribed members book a mentor&rsquo;s open time slot directly on the platform and
+            instantly get a private video link and a calendar invite — no waiting on coordination.
           </Faq>
           <Faq q="How long does approval take?">
             We review applications personally — typically within a few business days.

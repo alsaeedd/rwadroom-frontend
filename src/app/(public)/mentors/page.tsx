@@ -150,8 +150,8 @@ export default function PublicMentorsPage() {
             Want to book a session?
           </h2>
           <p className="text-muted mb-6">
-            Mentor sessions are exclusively for subscribed Rwad Room members. Every introduction
-            is coordinated by the team.
+            Mentor sessions are exclusively for subscribed Rwad Room members. Members book an open
+            time slot directly and get an instant video link.
           </p>
           <Link
             href="/join"

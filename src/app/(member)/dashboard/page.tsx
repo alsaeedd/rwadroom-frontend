@@ -117,7 +117,7 @@ export default function StartupDashboardPage() {
               : isRejected
                 ? "An admin reviewed your profile and it wasn't approved yet — check your email for the details. Update your profile and resubmit to get back in the queue."
                 : subActive
-                  ? "Your community access is active. Explore partner discounts, request mentor sessions, and tap into the resources hub."
+                  ? "Your community access is active. Explore partner discounts, book mentor sessions, and tap into the resources hub."
                   : "Activate your annual subscription to unlock partner discounts, mentor sessions, and the full resources library."}
           </p>
           <div className="mt-6 flex flex-wrap gap-3">

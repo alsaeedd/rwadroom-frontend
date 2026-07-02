@@ -114,8 +114,7 @@ export default function AboutPage() {
             Once you&rsquo;re in, your profile is published to the community directory.
           </Step>
           <Step n={3} title="Connect">
-            Browse partners, request mentor sessions, download resources — all coordinated
-            through the platform.
+            Browse partners, book mentor sessions, download resources — all on the platform.
           </Step>
         </div>
       </section>
