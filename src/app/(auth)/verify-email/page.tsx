@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, Suspense } from "react";
+import { useEffect, useRef, useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Card } from "@/components/ui/card";
@@ -14,8 +14,12 @@ function VerifyEmailContent() {
   const token = searchParams.get("token");
   const [status, setStatus] = useState<"loading" | "success" | "error">("loading");
   const [message, setMessage] = useState("");
+  // The token is single-use; React StrictMode runs this effect twice in dev.
+  const sent = useRef(false);
 
   useEffect(() => {
+    if (sent.current) return;
+    sent.current = true;
     if (!token) {
       setStatus("error");
       setMessage("No verification token provided.");

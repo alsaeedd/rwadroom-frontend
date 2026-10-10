@@ -133,7 +133,7 @@ export default function PartnerDetailPage() {
             placeholder="Why would you like to connect with this partner?"
             value={purpose}
             onChange={(e) => setPurpose(e.target.value)}
-            maxLength={1000}
+            maxLength={500}
           />
           <Select
             label="Urgency"
@@ -150,7 +150,7 @@ export default function PartnerDetailPage() {
             placeholder="Any extra details..."
             value={context}
             onChange={(e) => setContext(e.target.value)}
-            maxLength={2000}
+            maxLength={1000}
           />
           <div className="flex gap-3 justify-end pt-2">
             <Button variant="ghost" onClick={() => setIntroModal(false)}>Cancel</Button>

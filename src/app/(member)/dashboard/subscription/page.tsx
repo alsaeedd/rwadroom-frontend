@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -30,34 +31,45 @@ interface SubscriptionStatusResponse {
   } | null;
 }
 
-const statusVariant: Record<SubscriptionStatus, "success" | "warning" | "danger" | "neutral"> = {
+const statusVariant: Record<
+  SubscriptionStatus,
+  "success" | "warning" | "danger" | "neutral"
+> = {
   ACTIVE: "success",
   PENDING_PAYMENT: "warning",
   EXPIRED: "danger",
   CANCELLED: "neutral",
 };
 
-export default function SubscriptionPage() {
+function SubscriptionContent() {
   const user = useAuthStore((s) => s.user);
+  const fetchUser = useAuthStore((s) => s.fetchUser);
+  const justPaid = useSearchParams().get("paid") === "1";
   const [data, setData] = useState<SubscriptionStatusResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [checkoutLoading, setCheckoutLoading] = useState(false);
   const [error, setError] = useState("");
 
   useEffect(() => {
+    // Back from the mock gateway: the access token is refreshed server-side
+    // by the next call, but the store still has the pre-payment user.
+    if (justPaid) void fetchUser();
     api<SubscriptionStatusResponse>("/subscriptions/status")
       .then(setData)
       .catch(() => {})
       .finally(() => setLoading(false));
-  }, []);
+  }, [justPaid, fetchUser]);
 
   const handleCheckout = async () => {
     setCheckoutLoading(true);
     setError("");
     try {
-      const result = await api<{ checkoutUrl: string }>("/subscriptions/checkout", {
-        method: "POST",
-      });
+      const result = await api<{ checkoutUrl: string }>(
+        "/subscriptions/checkout",
+        {
+          method: "POST",
+        },
+      );
       if (result.checkoutUrl) {
         window.location.href = result.checkoutUrl;
       } else {
@@ -65,7 +77,11 @@ export default function SubscriptionPage() {
         setCheckoutLoading(false);
       }
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : "Checkout failed. Please try again.");
+      setError(
+        err instanceof ApiError
+          ? err.message
+          : "Checkout failed. Please try again.",
+      );
       setCheckoutLoading(false);
     }
   };
@@ -94,7 +110,8 @@ export default function SubscriptionPage() {
     );
   }
 
-  const isActive = user?.subscriptionActive ?? data?.subscriptionActive ?? false;
+  const isActive =
+    user?.subscriptionActive ?? data?.subscriptionActive ?? false;
   const sub = data?.subscription;
 
   return (
@@ -104,7 +121,16 @@ export default function SubscriptionPage() {
         <p className="text-muted mt-1">Manage your Rwad Room membership.</p>
       </div>
 
-      {error && <Alert variant="error" className="mb-5">{error}</Alert>}
+      {error && (
+        <Alert variant="error" className="mb-5">
+          {error}
+        </Alert>
+      )}
+      {justPaid && !error && (
+        <Alert variant="success" className="mb-5">
+          Payment received — welcome aboard! Your membership is active.
+        </Alert>
+      )}
 
       <div className="grid gap-6 lg:grid-cols-2">
         {/* Status card */}
@@ -112,10 +138,16 @@ export default function SubscriptionPage() {
           <div className="flex items-center gap-4 mb-6">
             <div
               className={`flex h-14 w-14 items-center justify-center rounded-2xl ${
-                isActive ? "bg-emerald-50 text-emerald-600" : "bg-muted/8 text-muted"
+                isActive
+                  ? "bg-emerald-50 text-emerald-600"
+                  : "bg-muted/8 text-muted"
               }`}
             >
-              {isActive ? <CheckCircle2 className="h-7 w-7" /> : <Clock className="h-7 w-7" />}
+              {isActive ? (
+                <CheckCircle2 className="h-7 w-7" />
+              ) : (
+                <Clock className="h-7 w-7" />
+              )}
             </div>
             <div>
               <h2 className="text-lg font-bold">
@@ -175,12 +207,28 @@ export default function SubscriptionPage() {
                     isActive ? "text-emerald-500" : "text-muted/30"
                   }`}
                 />
-                <span className={isActive ? "text-foreground" : "text-muted"}>{benefit}</span>
+                <span className={isActive ? "text-foreground" : "text-muted"}>
+                  {benefit}
+                </span>
               </li>
             ))}
           </ul>
         </Card>
       </div>
     </div>
+  );
+}
+
+export default function SubscriptionPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex items-center justify-center py-20">
+          <Spinner className="h-8 w-8" />
+        </div>
+      }
+    >
+      <SubscriptionContent />
+    </Suspense>
   );
 }

@@ -1,6 +1,7 @@
-"use client";
+import { Suspense } from "react";
+("use client");
 
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { DataTable, type Column } from "@/components/ui/data-table";
 import { SearchInput } from "@/components/ui/search-input";
 import { Select } from "@/components/ui/select";
@@ -10,7 +11,10 @@ import { usePaginatedQuery } from "@/lib/hooks/use-paginated-query";
 import type { AdminUser, Role, UserStatus } from "@/lib/types";
 import { Eye } from "lucide-react";
 
-const statusVariant: Record<UserStatus, "success" | "warning" | "danger" | "neutral"> = {
+const statusVariant: Record<
+  UserStatus,
+  "success" | "warning" | "danger" | "neutral"
+> = {
   INCOMPLETE: "neutral",
   APPROVED: "success",
   PENDING: "warning",
@@ -33,10 +37,26 @@ const statusOptions = [
   { value: "REJECTED", label: "Rejected" },
 ];
 
-export default function AdminUsersPage() {
+function AdminUsersPageContent() {
+  const sp = useSearchParams();
   const router = useRouter();
-  const { data, meta, isLoading, search, filters, setSearch, setFilters, setPage } =
-    usePaginatedQuery<AdminUser>({ path: "/admin/users" });
+  const {
+    data,
+    meta,
+    isLoading,
+    search,
+    filters,
+    setSearch,
+    setFilters,
+    setPage,
+  } = usePaginatedQuery<AdminUser>({
+    path: "/admin/users",
+    // Overview cards deep-link with ?status= / ?role=
+    initialFilters: {
+      role: sp.get("role") ?? undefined,
+      status: sp.get("status") ?? undefined,
+    },
+  });
 
   const columns: Column<AdminUser>[] = [
     {
@@ -44,7 +64,9 @@ export default function AdminUsersPage() {
       header: "Name",
       render: (u) => (
         <div>
-          <p className="font-medium text-foreground">{u.firstName} {u.lastName}</p>
+          <p className="font-medium text-foreground">
+            {u.firstName} {u.lastName}
+          </p>
           <p className="text-xs text-muted">{u.email}</p>
         </div>
       ),
@@ -57,7 +79,9 @@ export default function AdminUsersPage() {
     {
       key: "status",
       header: "Status",
-      render: (u) => <Badge variant={statusVariant[u.status]}>{u.status}</Badge>,
+      render: (u) => (
+        <Badge variant={statusVariant[u.status]}>{u.status}</Badge>
+      ),
     },
     {
       key: "subscription",
@@ -100,7 +124,9 @@ export default function AdminUsersPage() {
     <div>
       <div className="mb-8">
         <h1 className="text-2xl font-bold tracking-tight">User Management</h1>
-        <p className="text-muted mt-1">Review and manage all registered users.</p>
+        <p className="text-muted mt-1">
+          Review and manage all registered users.
+        </p>
       </div>
 
       {/* Filters */}
@@ -114,13 +140,17 @@ export default function AdminUsersPage() {
         <Select
           options={roleOptions}
           value={filters.role || ""}
-          onChange={(e) => setFilters({ ...filters, role: e.target.value || undefined })}
+          onChange={(e) =>
+            setFilters({ ...filters, role: e.target.value || undefined })
+          }
           className="w-full sm:w-40"
         />
         <Select
           options={statusOptions}
           value={filters.status || ""}
-          onChange={(e) => setFilters({ ...filters, status: e.target.value || undefined })}
+          onChange={(e) =>
+            setFilters({ ...filters, status: e.target.value || undefined })
+          }
           className="w-full sm:w-40"
         />
       </div>
@@ -142,5 +172,13 @@ export default function AdminUsersPage() {
         />
       </div>
     </div>
+  );
+}
+
+export default function AdminUsersPage() {
+  return (
+    <Suspense>
+      <AdminUsersPageContent />
+    </Suspense>
   );
 }

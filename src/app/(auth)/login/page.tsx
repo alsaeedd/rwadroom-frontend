@@ -41,7 +41,8 @@ function LoginContent() {
       await login(data.email, data.password);
       const user = useAuthStore.getState().user;
       if (user) {
-        router.replace(redirect || getDashboardPath(user.role));
+        const safe = redirect && redirect.startsWith("/") && !redirect.startsWith("//");
+        router.replace(safe ? redirect : getDashboardPath(user.role));
       }
     } catch (err) {
       if (err instanceof ApiError) {

@@ -1,16 +1,25 @@
-"use client";
+import { Suspense } from "react";
+("use client");
 
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { DataTable, type Column } from "@/components/ui/data-table";
 import { SearchInput } from "@/components/ui/search-input";
 import { Select } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { usePaginatedQuery } from "@/lib/hooks/use-paginated-query";
-import type { Introduction, IntroductionStatus, IntroductionType, Urgency } from "@/lib/types";
+import type {
+  Introduction,
+  IntroductionStatus,
+  IntroductionType,
+  Urgency,
+} from "@/lib/types";
 import { Eye } from "lucide-react";
 
-const statusVariant: Record<IntroductionStatus, "warning" | "info" | "success" | "danger"> = {
+const statusVariant: Record<
+  IntroductionStatus,
+  "warning" | "info" | "success" | "danger"
+> = {
   PENDING: "warning",
   IN_PROGRESS: "info",
   COMPLETED: "success",
@@ -44,10 +53,19 @@ const urgencyOptions = [
   { value: "LOW", label: "Low" },
 ];
 
-export default function AdminIntroductionsPage() {
+function AdminIntroductionsPageContent() {
+  const sp = useSearchParams();
   const router = useRouter();
   const { data, meta, isLoading, filters, setFilters, setPage } =
-    usePaginatedQuery<Introduction>({ path: "/admin/introductions" });
+    usePaginatedQuery<Introduction>({
+      path: "/admin/introductions",
+      // Overview cards deep-link with ?status= / ?role=
+      initialFilters: {
+        status: sp.get("status") ?? undefined,
+        type: sp.get("type") ?? undefined,
+        urgency: sp.get("urgency") ?? undefined,
+      },
+    });
 
   const columns: Column<Introduction>[] = [
     {
@@ -80,18 +98,24 @@ export default function AdminIntroductionsPage() {
     {
       key: "urgency",
       header: "Urgency",
-      render: (i) => <Badge variant={urgencyVariant[i.urgency]}>{i.urgency}</Badge>,
+      render: (i) => (
+        <Badge variant={urgencyVariant[i.urgency]}>{i.urgency}</Badge>
+      ),
     },
     {
       key: "status",
       header: "Status",
-      render: (i) => <Badge variant={statusVariant[i.status]}>{i.status}</Badge>,
+      render: (i) => (
+        <Badge variant={statusVariant[i.status]}>{i.status}</Badge>
+      ),
     },
     {
       key: "date",
       header: "Date",
       render: (i) => (
-        <span className="text-muted text-sm">{new Date(i.createdAt).toLocaleDateString()}</span>
+        <span className="text-muted text-sm">
+          {new Date(i.createdAt).toLocaleDateString()}
+        </span>
       ),
     },
     {
@@ -99,7 +123,11 @@ export default function AdminIntroductionsPage() {
       header: "",
       className: "w-12",
       render: (i) => (
-        <Button variant="ghost" size="sm" onClick={() => router.push(`/admin/introductions/${i.id}`)}>
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => router.push(`/admin/introductions/${i.id}`)}
+        >
           <Eye className="h-4 w-4" />
         </Button>
       ),
@@ -110,26 +138,34 @@ export default function AdminIntroductionsPage() {
     <div>
       <div className="mb-8">
         <h1 className="text-2xl font-bold tracking-tight">Introductions</h1>
-        <p className="text-muted mt-1">Manage partner introductions and mentor session requests.</p>
+        <p className="text-muted mt-1">
+          Manage partner introductions and mentor session requests.
+        </p>
       </div>
 
       <div className="mb-6 flex flex-col sm:flex-row gap-3">
         <Select
           options={statusOptions}
           value={filters.status || ""}
-          onChange={(e) => setFilters({ ...filters, status: e.target.value || undefined })}
+          onChange={(e) =>
+            setFilters({ ...filters, status: e.target.value || undefined })
+          }
           className="w-full sm:w-40"
         />
         <Select
           options={typeOptions}
           value={filters.type || ""}
-          onChange={(e) => setFilters({ ...filters, type: e.target.value || undefined })}
+          onChange={(e) =>
+            setFilters({ ...filters, type: e.target.value || undefined })
+          }
           className="w-full sm:w-44"
         />
         <Select
           options={urgencyOptions}
           value={filters.urgency || ""}
-          onChange={(e) => setFilters({ ...filters, urgency: e.target.value || undefined })}
+          onChange={(e) =>
+            setFilters({ ...filters, urgency: e.target.value || undefined })
+          }
           className="w-full sm:w-36"
         />
       </div>
@@ -142,9 +178,21 @@ export default function AdminIntroductionsPage() {
           keyExtractor={(i) => i.id}
           emptyTitle="No introduction requests"
           emptyDescription="Requests will appear here when startups submit them."
-          pagination={{ currentPage: meta.page, totalPages: meta.totalPages, onPageChange: setPage }}
+          pagination={{
+            currentPage: meta.page,
+            totalPages: meta.totalPages,
+            onPageChange: setPage,
+          }}
         />
       </div>
     </div>
+  );
+}
+
+export default function AdminIntroductionsPage() {
+  return (
+    <Suspense>
+      <AdminIntroductionsPageContent />
+    </Suspense>
   );
 }

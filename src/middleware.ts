@@ -8,6 +8,8 @@ const publicPaths = [
   "/forgot-password",
   "/reset-password",
   "/set-password",
+  // Mock payment gateway — opened without a web session from the mobile app
+  "/subscription/checkout-mock",
   // Public marketing site (§5.1)
   "/about",
   "/community",

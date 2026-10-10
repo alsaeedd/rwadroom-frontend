@@ -74,6 +74,7 @@ export async function api<T = unknown>(
     throw new ApiError(res.status, body.message || "Something went wrong");
   }
 
+  if (res.status === 204) return undefined as T;
   return res.json() as Promise<T>;
 }
 
