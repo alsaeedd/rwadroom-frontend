@@ -37,6 +37,9 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
             error && "border-danger/50",
             className,
           )}
+          // Uncontrolled + placeholder: show the placeholder, not the first option,
+          // so what the browser displays matches what the form will submit.
+          defaultValue={placeholder && props.value === undefined && props.defaultValue === undefined ? "" : undefined}
           {...props}
         >
           {placeholder && (

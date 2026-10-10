@@ -19,6 +19,7 @@ export interface User {
   lastName: string;
   role: Role;
   status: UserStatus;
+  statusReason?: string | null;
   subscriptionActive: boolean;
   emailVerified: boolean;
   isActive: boolean;

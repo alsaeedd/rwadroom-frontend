@@ -63,6 +63,16 @@ function LoginContent() {
       {error && (
         <div className="mb-6 rounded-xl bg-danger/8 px-4 py-3.5 text-sm font-medium text-danger border border-danger/10">
           {error}
+          {/deactivated/i.test(error) && (
+            <>
+              {" "}
+              Email{" "}
+              <a className="underline" href="mailto:hello@rwadroom.com">
+                hello@rwadroom.com
+              </a>{" "}
+              to restore access.
+            </>
+          )}
         </div>
       )}
 

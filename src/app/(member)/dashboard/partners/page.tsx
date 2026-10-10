@@ -48,7 +48,7 @@ export default function PartnersPage() {
                     </div>
                   )}
                   <div className="min-w-0 flex-1">
-                    <h3 className="font-semibold truncate">{p.companyName}</h3>
+                    <h3 className="font-semibold line-clamp-2 break-words">{p.companyName}</h3>
                     {p.serviceCategory && (
                       <p className="text-xs text-muted">{SECTOR_LABEL[p.serviceCategory]}</p>
                     )}

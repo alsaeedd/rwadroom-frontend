@@ -165,7 +165,7 @@ export default function PartnerDashboardPage() {
                     ? "Your profile wasn't approved yet — check your email for details. Update it and save to resubmit for review."
                     : profile.isPubliclyVisible
                       ? "Your company appears in the public partners directory."
-                      : "You&rsquo;ve hidden your company from the public directory."}
+                      : "You’ve hidden your company from the public directory."}
               </p>
             </>
           ) : (
@@ -184,7 +184,7 @@ export default function PartnerDashboardPage() {
             <p className="text-xs uppercase tracking-wide text-accent font-semibold mb-1">
               Discount
             </p>
-            <p className="text-foreground font-medium">{profile.discountDescription}</p>
+            <p className="text-foreground font-medium break-words">{profile.discountDescription}</p>
             {profile.discountCode && (
               <div className="mt-3 inline-flex items-center gap-2 rounded-lg bg-white px-3 py-1.5 border border-accent/20">
                 <span className="text-xs uppercase text-muted">Code</span>

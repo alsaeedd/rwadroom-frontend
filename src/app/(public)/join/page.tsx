@@ -19,7 +19,7 @@ export default function JoinPage() {
   return (
     <>
       {/* Hero */}
-      <section className="relative overflow-hidden">
+      <section className="relative overflow-hidden isolate">
         <div className="absolute inset-0 -z-10 bg-gradient-to-br from-primary via-primary to-[#0F2E9B]" />
         <div className="absolute -right-24 -top-24 -z-10 h-[420px] w-[420px] rounded-full bg-accent/30 blur-[120px]" />
 

@@ -71,6 +71,20 @@ export default function CommunityPage() {
           <div className="flex justify-center py-20">
             <Spinner className="h-8 w-8" />
           </div>
+        ) : filtered.length === 0 && search ? (
+          <EmptyState
+            icon={<Building2 className="h-8 w-8" />}
+            title={`No matches for “${search}”`}
+            description="Try a different company name."
+            action={
+              <button
+                onClick={() => setSearch("")}
+                className="inline-flex items-center gap-1.5 rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-white cursor-pointer"
+              >
+                Clear search
+              </button>
+            }
+          />
         ) : filtered.length === 0 ? (
           <EmptyState
             icon={<Building2 className="h-8 w-8" />}
@@ -92,16 +106,23 @@ export default function CommunityPage() {
                 <Link
                   key={m.id}
                   href={`/community/${m.id}`}
-                  className="group aspect-square rounded-2xl border border-border bg-white flex items-center justify-center p-4 hover:border-primary/30 hover:shadow-md transition-all"
+                  className="group aspect-square rounded-2xl border border-border bg-white flex flex-col items-center justify-center p-4 hover:border-primary/30 hover:shadow-md transition-all"
                   title={m.companyName}
                 >
                   {m.logoUrl ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img
-                      src={m.logoUrl}
-                      alt={m.companyName}
-                      className="max-h-full max-w-full object-contain"
-                    />
+                    <>
+                      <div className="flex-1 min-h-0 w-full flex items-center justify-center">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={m.logoUrl}
+                          alt={m.companyName}
+                          className="max-h-full max-w-full object-contain"
+                        />
+                      </div>
+                      <span className="mt-2 text-[11px] font-medium text-foreground/70 text-center line-clamp-2">
+                        {m.companyName}
+                      </span>
+                    </>
                   ) : (
                     <span className="text-xs font-semibold text-foreground/60 text-center line-clamp-3 group-hover:text-foreground">
                       {m.companyName}

@@ -180,8 +180,8 @@ export default function AdminResourcesPage() {
           data={data}
           isLoading={isLoading}
           keyExtractor={(r) => r.id}
-          emptyTitle="No resources yet"
-          emptyDescription="Upload your first resource to get started."
+          emptyTitle={search ? "No matching resources" : "No resources yet"}
+          emptyDescription={search ? "Try a different search." : "Upload your first resource to get started."}
           pagination={{ currentPage: meta.page, totalPages: meta.totalPages, onPageChange: setPage }}
         />
       </div>

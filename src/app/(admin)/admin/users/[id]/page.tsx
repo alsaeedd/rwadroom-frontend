@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Alert } from "@/components/ui/alert";
 import { Modal } from "@/components/ui/modal";
+import { Textarea } from "@/components/ui/textarea";
 import { Spinner } from "@/components/ui/spinner";
 import { api, ApiError } from "@/lib/api";
 import { useAuthStore } from "@/lib/auth";
@@ -81,6 +82,7 @@ export default function AdminUserDetailPage() {
     message: string;
     danger?: boolean;
   } | null>(null);
+  const [reason, setReason] = useState("");
 
   const fetchUser = () => {
     setIsLoading(true);
@@ -112,8 +114,9 @@ export default function AdminUserDetailPage() {
         case "reject":
           await api(`/admin/users/${id}/status`, {
             method: "PATCH",
-            body: JSON.stringify({ status: "REJECTED" }),
+            body: JSON.stringify({ status: "REJECTED", reason: reason.trim() || undefined }),
           });
+          setReason("");
           setSuccess("User rejected.");
           break;
         case "approve-profile":
@@ -126,8 +129,9 @@ export default function AdminUserDetailPage() {
         case "reject-profile":
           await api(`/admin/users/${id}/profile-status`, {
             method: "PATCH",
-            body: JSON.stringify({ status: "REJECTED" }),
+            body: JSON.stringify({ status: "REJECTED", reason: reason.trim() || undefined }),
           });
+          setReason("");
           setSuccess("Profile hidden from public listings.");
           break;
         case "promote":
@@ -708,6 +712,16 @@ export default function AdminUserDetailPage() {
       {confirmModal && (
         <Modal open={true} onClose={() => setConfirmModal(null)} title={confirmModal.title}>
           <p className="text-sm text-muted mb-6">{confirmModal.message}</p>
+          {(confirmModal.action === "reject" || confirmModal.action === "reject-profile") && (
+            <div className="mb-6">
+              <Textarea
+                label="Reason (shown to the member)"
+                placeholder="e.g. Website link is broken and the description is too short."
+                value={reason}
+                onChange={(e) => setReason(e.target.value)}
+              />
+            </div>
+          )}
           <div className="flex gap-3 justify-end">
             <Button variant="ghost" onClick={() => setConfirmModal(null)}>
               Cancel

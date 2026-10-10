@@ -71,17 +71,21 @@ export default function ResourceLibraryPage() {
       {isLoading ? (
         <div className="flex justify-center py-20"><Spinner className="h-8 w-8" /></div>
       ) : data.length === 0 ? (
-        <EmptyState icon={<BookOpen className="h-8 w-8" />} title="No resources found" description="Try a different search or category." />
+        <EmptyState
+          icon={<BookOpen className="h-8 w-8" />}
+          title={search ? `No matches for “${search}”` : "No resources found"}
+          description={search ? "Try a different word or clear the search." : "Try a different category."}
+        />
       ) : (
         <>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {data.map((r) => {
-              const locked = r.visibility === "MEMBERS_ONLY" && !subscriptionActive;
+              const locked = r.locked || (r.visibility === "MEMBERS_ONLY" && !subscriptionActive);
               return (
                 <Card
                   key={r.id}
                   className={`cursor-pointer hover:shadow-lg transition-all duration-200 ${locked ? "opacity-70" : ""}`}
-                  onClick={() => !locked && router.push(`/dashboard/resources/${r.id}`)}
+                  onClick={() => router.push(locked ? "/dashboard/subscription" : `/dashboard/resources/${r.id}`)}
                 >
                   <div className="flex items-start justify-between mb-3">
                     <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/8">
@@ -96,6 +100,7 @@ export default function ResourceLibraryPage() {
                     )}
                   </div>
                   <h3 className="font-semibold text-sm mb-1">{r.title}</h3>
+                  {locked && <p className="text-xs text-accent font-medium mb-1">Members only · Subscribe to open</p>}
                   {r.description && <p className="text-xs text-muted line-clamp-2">{r.description}</p>}
                   {r.category && <p className="text-[11px] text-muted/60 mt-2">{r.category.name}</p>}
                 </Card>

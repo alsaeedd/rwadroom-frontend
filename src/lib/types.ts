@@ -209,6 +209,7 @@ export interface Resource {
   createdAt: string;
   updatedAt: string;
   category?: ResourceCategory;
+  locked?: boolean;
 }
 
 // ─── Subscriptions ──────────────────────────────────────────────────────────
@@ -278,6 +279,7 @@ export interface Booking {
   whenLabel: string;
   isPast: boolean;
   cancelledBy?: string | null;
+  cancellationReason?: string | null;
   mentor: {
     userId: string;
     name: string;

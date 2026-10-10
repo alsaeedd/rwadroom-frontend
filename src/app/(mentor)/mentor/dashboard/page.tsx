@@ -65,7 +65,7 @@ export default function MentorDashboardPage() {
           <p className="text-white/70 mt-3 max-w-xl">
             {isApproved
               ? "Your profile is live. Set your weekly availability and subscribed startups can book sessions with you directly — each comes with a video link and calendar invite."
-              : "Once an admin approves your profile, you&rsquo;ll be listed in the public mentor directory and can open times for booking."}
+              : "Once an admin approves your profile, you’ll be listed in the public mentor directory and can open times for booking."}
           </p>
           <div className="mt-6 flex flex-wrap gap-3">
             <Link
@@ -187,7 +187,7 @@ export default function MentorDashboardPage() {
                     ? "Your profile wasn't approved yet — check your email for details. Update it and save to resubmit for review."
                     : profile.isPubliclyVisible
                       ? "You appear in the public mentor directory."
-                      : "You&rsquo;ve hidden yourself from the public directory."}
+                      : "You’ve hidden yourself from the public directory."}
               </p>
             </>
           ) : (

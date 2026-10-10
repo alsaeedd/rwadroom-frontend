@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -40,6 +40,10 @@ export default function MentorAvailabilityPage() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const noteRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (success || error) noteRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+  }, [success, error]);
 
   useEffect(() => {
     api<AvailabilityResponse>("/bookings/availability")
@@ -126,8 +130,10 @@ export default function MentorAvailabilityPage() {
         </Link>
       </div>
 
-      {error && <Alert variant="error">{error}</Alert>}
-      {success && <Alert variant="success">{success}</Alert>}
+      <div ref={noteRef} className="space-y-3">
+        {error && <Alert variant="error">{error}</Alert>}
+        {success && <Alert variant="success">{success}</Alert>}
+      </div>
 
       <Card>
         <div className="flex items-center gap-2 mb-5">
@@ -175,6 +181,11 @@ export default function MentorAvailabilityPage() {
                   >
                     <Trash2 className="h-4 w-4" />
                   </button>
+                  {invalid && (
+                    <p className="col-span-full text-xs text-danger">
+                      End time must be after the start time.
+                    </p>
+                  )}
                 </div>
               );
             })}

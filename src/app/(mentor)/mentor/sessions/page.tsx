@@ -7,6 +7,8 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 import { Alert } from "@/components/ui/alert";
+import { Modal } from "@/components/ui/modal";
+import { Textarea } from "@/components/ui/textarea";
 import { EmptyState } from "@/components/ui/empty-state";
 import { api, ApiError } from "@/lib/api";
 import type { Booking, BookingsListResponse } from "@/lib/types";
@@ -17,6 +19,8 @@ export default function MentorSessionsPage() {
   const [loading, setLoading] = useState(true);
   const [cancelling, setCancelling] = useState<string | null>(null);
   const [error, setError] = useState("");
+  const [cancelTarget, setCancelTarget] = useState<Booking | null>(null);
+  const [reason, setReason] = useState("");
 
   const load = () => {
     api<BookingsListResponse>("/bookings/mentor/sessions")
@@ -27,12 +31,18 @@ export default function MentorSessionsPage() {
 
   useEffect(load, []);
 
-  const handleCancel = async (id: string) => {
-    if (!confirm("Cancel this session? The startup will be notified.")) return;
+  const handleCancel = async () => {
+    if (!cancelTarget) return;
+    const id = cancelTarget.id;
     setCancelling(id);
     setError("");
     try {
-      await api(`/bookings/${id}`, { method: "DELETE" });
+      await api(`/bookings/${id}/cancel`, {
+        method: "POST",
+        body: JSON.stringify({ reason: reason.trim() || undefined }),
+      });
+      setCancelTarget(null);
+      setReason("");
       load();
     } catch (err) {
       setError(err instanceof ApiError ? err.message : "Could not cancel the session.");
@@ -95,7 +105,7 @@ export default function MentorSessionsPage() {
                   <MentorSessionCard
                     key={b.id}
                     booking={b}
-                    onCancel={() => handleCancel(b.id)}
+                    onCancel={() => setCancelTarget(b)}
                     cancelling={cancelling === b.id}
                   />
                 ))}
@@ -116,6 +126,28 @@ export default function MentorSessionsPage() {
             </section>
           )}
         </>
+      )}
+
+      {cancelTarget && (
+        <Modal open={true} onClose={() => setCancelTarget(null)} title="Cancel this session?">
+          <p className="text-sm text-muted mb-4">
+            {cancelTarget.whenLabel} with {cancelTarget.startup.name}. The startup will be notified.
+          </p>
+          <Textarea
+            label="Reason (optional)"
+            placeholder="e.g. Schedule conflict — will rebook next week."
+            value={reason}
+            onChange={(e) => setReason(e.target.value)}
+          />
+          <div className="mt-5 flex gap-3 justify-end">
+            <Button variant="ghost" onClick={() => setCancelTarget(null)}>
+              Keep it
+            </Button>
+            <Button variant="danger" isLoading={cancelling === cancelTarget.id} onClick={handleCancel}>
+              Cancel session
+            </Button>
+          </div>
+        </Modal>
       )}
     </div>
   );
@@ -146,6 +178,9 @@ function MentorSessionCard({
           <p className="text-sm">{booking.whenLabel} · {booking.durationMin} min</p>
           {booking.purpose && (
             <p className="text-sm text-muted mt-1.5">“{booking.purpose}”</p>
+          )}
+          {booking.cancellationReason && (
+            <p className="text-sm text-danger mt-1.5">Cancelled: {booking.cancellationReason}</p>
           )}
           {isJoinable && (
             <p className="text-xs text-muted mt-1.5">{booking.startup.email}</p>

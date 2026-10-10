@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -31,7 +31,7 @@ export default function CategoriesPage() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
-  const { register, handleSubmit, reset, formState: { errors, isSubmitting } } = useForm<CategoryForm>({
+  const { register, handleSubmit, reset, watch, setValue, formState: { errors, isSubmitting } } = useForm<CategoryForm>({
     resolver: zodResolver(schema),
     defaultValues: { sortOrder: 0 as number },
   });
@@ -45,7 +45,16 @@ export default function CategoriesPage() {
 
   useEffect(() => { fetchCategories(); }, []);
 
+  // Slug follows the name until the admin edits the slug by hand.
+  const name = watch("name");
+  const slugTouched = useRef(false);
+  useEffect(() => {
+    if (slugTouched.current) return;
+    setValue("slug", (name ?? "").toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, ""));
+  }, [name, setValue]);
+
   const handleDelete = async (cat: ResourceCategory) => {
+    if (!confirm(`Delete category "${cat.name}"?`)) return;
     setError("");
     setSuccess("");
     try {
@@ -67,6 +76,7 @@ export default function CategoriesPage() {
       });
       setSuccess("Category created.");
       reset();
+      slugTouched.current = false;
       fetchCategories();
     } catch (err) {
       setError(err instanceof ApiError ? err.message : "Failed to create category.");
@@ -97,7 +107,7 @@ export default function CategoriesPage() {
 
           <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
             <Input label="Name" placeholder="e.g. Business Plans" error={errors.name?.message} {...register("name")} />
-            <Input label="Slug" placeholder="e.g. business-plans" error={errors.slug?.message} {...register("slug")} />
+            <Input label="URL name (slug)" placeholder="e.g. business-plans" error={errors.slug?.message} {...register("slug", { onChange: () => { slugTouched.current = true; } })} />
             <Textarea label="Description" placeholder="Optional description" error={errors.description?.message} {...register("description")} />
             <Input label="Sort Order" type="number" error={errors.sortOrder?.message} {...register("sortOrder", { valueAsNumber: true })} />
             <Button type="submit" isLoading={isSubmitting}>Create Category</Button>

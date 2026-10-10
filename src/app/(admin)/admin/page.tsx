@@ -110,7 +110,7 @@ export default function AdminDashboardPage() {
                   >
                     {card.value}
                   </p>
-                  <p className="text-xs text-muted mt-2 truncate">{card.sub}</p>
+                  <p className="text-xs text-muted mt-2 leading-snug">{card.sub}</p>
                 </div>
                 <div
                   className={`flex h-12 w-12 items-center justify-center rounded-2xl shrink-0 ${

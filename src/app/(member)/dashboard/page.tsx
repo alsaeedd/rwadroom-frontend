@@ -115,7 +115,9 @@ export default function StartupDashboardPage() {
             {isIncomplete
               ? "You're one step away. Complete your startup profile to submit for approval and unlock partner discounts, mentor sessions, and the resources hub."
               : isRejected
-                ? "An admin reviewed your profile and it wasn't approved yet — check your email for the details. Update your profile and resubmit to get back in the queue."
+                ? user?.statusReason
+                  ? `An admin reviewed your profile and it wasn't approved yet. Reason: ${user.statusReason}. Update your profile and resubmit to get back in the queue.`
+                  : "An admin reviewed your profile and it wasn't approved yet — check your email for the details. Update your profile and resubmit to get back in the queue."
                 : subActive
                   ? "Your community access is active. Explore partner discounts, book mentor sessions, and tap into the resources hub."
                   : "Activate your annual subscription to unlock partner discounts, mentor sessions, and the full resources library."}

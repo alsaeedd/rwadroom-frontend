@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -47,6 +47,10 @@ export default function StartupProfilePage() {
   const [isCreate, setIsCreate] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const noteRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (success || error) noteRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+  }, [success, error]);
   const [uploading, setUploading] = useState(false);
   const [visibilityBusy, setVisibilityBusy] = useState(false);
   const fetchUser = useAuthStore((s) => s.fetchUser);
@@ -161,16 +165,18 @@ export default function StartupProfilePage() {
         </p>
       </div>
 
-      {success && (
-        <Alert variant="success" className="mb-5">
-          {success}
-        </Alert>
-      )}
-      {error && (
-        <Alert variant="error" className="mb-5">
-          {error}
-        </Alert>
-      )}
+      <div ref={noteRef}>
+        {success && (
+          <Alert variant="success" className="mb-5">
+            {success}
+          </Alert>
+        )}
+        {error && (
+          <Alert variant="error" className="mb-5">
+            {error}
+          </Alert>
+        )}
+      </div>
 
       <div className="grid gap-6 lg:grid-cols-3">
         <Card className="lg:col-span-2">
