@@ -28,6 +28,8 @@ const INDUSTRY_VALUES = INDUSTRY_FOCUS_OPTIONS.map((o) => o.value) as [
 ];
 const LANGUAGE_VALUES = LANGUAGE_OPTIONS.map((o) => o.value) as [Language, ...Language[]];
 
+const LINK_HELP = "Add your LinkedIn profile or website so we can verify you.";
+
 const schema = z.object({
   title: z.string().optional(),
   bio: z.string().max(2000).optional(),
@@ -36,7 +38,8 @@ const schema = z.object({
   languages: z.array(z.enum(LANGUAGE_VALUES)).min(1, "Pick at least one language"),
   discountNote: z.string().max(500).optional(),
   linkedinUrl: z.string().url("Must be a valid URL").optional().or(z.literal("")),
-});
+  website: z.string().url("Must be a valid URL").optional().or(z.literal("")),
+}).refine((d) => d.linkedinUrl || d.website, { message: LINK_HELP, path: ["linkedinUrl"] });
 
 type ProfileForm = z.infer<typeof schema>;
 
@@ -76,6 +79,7 @@ export default function MentorProfilePage() {
           languages: p.languages?.length ? p.languages : ["ENGLISH"],
           discountNote: p.discountNote || "",
           linkedinUrl: p.linkedinUrl || "",
+          website: p.website || "",
         });
       })
       .catch(() => setIsCreate(true))
@@ -97,6 +101,7 @@ export default function MentorProfilePage() {
             .filter(Boolean),
           discountNote: data.discountNote || undefined,
           linkedinUrl: data.linkedinUrl || undefined,
+          website: data.website || undefined,
         }),
       });
       setProfile(result);
@@ -233,8 +238,17 @@ export default function MentorProfilePage() {
               label="LinkedIn URL"
               type="url"
               placeholder="https://linkedin.com/in/your-profile"
+              helper={LINK_HELP}
               error={errors.linkedinUrl?.message}
               {...register("linkedinUrl")}
+            />
+            <Input
+              label="Website"
+              type="url"
+              placeholder="https://your-site.com"
+              helper={LINK_HELP}
+              error={errors.website?.message}
+              {...register("website")}
             />
             <Button type="submit" isLoading={isSubmitting} size="lg">
               {isCreate ? "Create Profile" : "Save Changes"}

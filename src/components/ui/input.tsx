@@ -7,10 +7,11 @@ import { Eye, EyeOff } from "lucide-react";
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   label?: string;
   error?: string;
+  helper?: string;
 }
 
 export const Input = forwardRef<HTMLInputElement, InputProps>(
-  ({ className, label, error, id, type, ...props }, ref) => {
+  ({ className, label, error, helper, id, type, ...props }, ref) => {
     const [showPassword, setShowPassword] = useState(false);
     const isPassword = type === "password";
     const inputId = id || label?.toLowerCase().replace(/\s+/g, "-");
@@ -55,6 +56,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             </button>
           )}
         </div>
+        {helper && !error && <p className="text-xs text-muted">{helper}</p>}
         {error && <p className="text-xs font-medium text-danger">{error}</p>}
       </div>
     );

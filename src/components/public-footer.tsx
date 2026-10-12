@@ -80,7 +80,14 @@ export function PublicFooter() {
       <div className="border-t border-white/10">
         <div className="mx-auto max-w-6xl px-5 sm:px-8 py-5 flex flex-col sm:flex-row items-center justify-between gap-3">
           <p className="text-xs text-white/40">
-            © {new Date().getFullYear()} Rwad Room. All rights reserved.
+            © {new Date().getFullYear()} Rwad Room. All rights reserved. ·{" "}
+            <Link href="/terms" className="hover:text-white transition-colors">
+              Terms of Service
+            </Link>{" "}
+            ·{" "}
+            <Link href="/privacy" className="hover:text-white transition-colors">
+              Privacy Policy
+            </Link>
           </p>
           <p className="text-xs text-white/40">Pioneer your path.</p>
         </div>

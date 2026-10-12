@@ -101,11 +101,12 @@ export interface StartupProfile {
   userId: string;
   companyName: string;
   description?: string | null;
-  sector?: Sector | null;
+  sectors: Sector[];
   businessStage?: BusinessStage | null;
   locations: Country[];
   website?: string | null;
   logoUrl?: string | null;
+  crNumber?: string | null;
   status: ProfileStatus;
   isPubliclyVisible: boolean;
   createdAt: string;
@@ -122,6 +123,7 @@ export interface MentorProfile {
   bio?: string | null;
   discountNote?: string | null;
   linkedinUrl?: string | null;
+  website?: string | null;
   photoUrl?: string | null;
   status: ProfileStatus;
   isPubliclyVisible: boolean;
@@ -139,6 +141,7 @@ export interface PartnerProfile {
   logoUrl?: string | null;
   discountDescription: string;
   discountCode?: string | null;
+  crNumber?: string | null;
   status: ProfileStatus;
   isPubliclyVisible: boolean;
   createdAt: string;
@@ -151,7 +154,7 @@ export interface StartupListing {
   id: string;
   companyName: string;
   description?: string | null;
-  sector?: Sector | null;
+  sectors: Sector[];
   businessStage?: BusinessStage | null;
   locations: Country[];
   website?: string | null;

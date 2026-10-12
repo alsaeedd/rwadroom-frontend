@@ -7,7 +7,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Select } from "@/components/ui/select";
 import { ChipMultiSelect } from "@/components/ui/chip-multi-select";
 import { DescriptiveSelect } from "@/components/ui/descriptive-select";
 import { Button } from "@/components/ui/button";
@@ -32,8 +31,14 @@ const COUNTRY_VALUES = COUNTRY_OPTIONS.map((o) => o.value) as [Country, ...Count
 
 const schema = z.object({
   companyName: z.string().min(1, "Company name is required"),
+  crNumber: z
+    .string()
+    .trim()
+    .min(1, "CR number is required")
+    .min(3, "CR number must be 3 to 30 characters")
+    .max(30, "CR number must be 3 to 30 characters"),
   description: z.string().max(2000).optional(),
-  sector: z.enum(SECTOR_VALUES).optional().or(z.literal("")),
+  sectors: z.array(z.enum(SECTOR_VALUES)).max(5, "Pick up to 5 sectors"),
   businessStage: z.enum(STAGE_VALUES).optional().or(z.literal("")),
   locations: z.array(z.enum(COUNTRY_VALUES)).min(1, "Pick at least one location"),
   website: z.string().url("Must be a valid URL").optional().or(z.literal("")),
@@ -63,7 +68,7 @@ export default function StartupProfilePage() {
     formState: { errors, isSubmitting },
   } = useForm<ProfileForm>({
     resolver: zodResolver(schema),
-    defaultValues: { locations: ["BAHRAIN"] },
+    defaultValues: { sectors: [], locations: ["BAHRAIN"] },
   });
 
   useEffect(() => {
@@ -72,8 +77,9 @@ export default function StartupProfilePage() {
         setProfile(p);
         reset({
           companyName: p.companyName,
+          crNumber: p.crNumber || "",
           description: p.description || "",
-          sector: p.sector || "",
+          sectors: p.sectors ?? [],
           businessStage: p.businessStage || "",
           locations: p.locations?.length ? p.locations : ["BAHRAIN"],
           website: p.website || "",
@@ -92,7 +98,6 @@ export default function StartupProfilePage() {
         method,
         body: JSON.stringify({
           ...data,
-          sector: data.sector || undefined,
           businessStage: data.businessStage || undefined,
           website: data.website || undefined,
         }),
@@ -193,12 +198,12 @@ export default function StartupProfilePage() {
               {...register("description")}
             />
             <div className="grid gap-5 sm:grid-cols-2 sm:items-start">
-              <Select
-                label="Sector / Category"
-                placeholder="Select a sector"
-                options={SECTOR_OPTIONS}
-                error={errors.sector?.message}
-                {...register("sector")}
+              <Input
+                label="CR Number"
+                placeholder="e.g. 123456-1"
+                helper="Your Bahrain commercial registration number"
+                error={errors.crNumber?.message}
+                {...register("crNumber")}
               />
               <Controller
                 control={control}
@@ -215,6 +220,20 @@ export default function StartupProfilePage() {
                 )}
               />
             </div>
+            <Controller
+              control={control}
+              name="sectors"
+              render={({ field }) => (
+                <ChipMultiSelect<Sector>
+                  label="Sectors"
+                  helper="Pick up to 5 that describe your business."
+                  options={SECTOR_OPTIONS}
+                  value={field.value as Sector[]}
+                  onChange={field.onChange}
+                  error={errors.sectors?.message}
+                />
+              )}
+            />
             <Controller
               control={control}
               name="locations"

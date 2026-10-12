@@ -3,7 +3,7 @@
 import { useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Card } from "@/components/ui/card";
@@ -20,6 +20,7 @@ const schema = z.object({
     .regex(/[A-Z]/, "Must contain an uppercase letter")
     .regex(/[0-9]/, "Must contain a number")
     .regex(/[^a-zA-Z0-9]/, "Must contain a special character"),
+  acceptTerms: z.boolean(),
 });
 
 type SetPasswordForm = z.infer<typeof schema>;
@@ -33,10 +34,13 @@ function SetPasswordContent() {
   const {
     register,
     handleSubmit,
+    control,
     formState: { errors, isSubmitting },
   } = useForm<SetPasswordForm>({
     resolver: zodResolver(schema),
+    defaultValues: { acceptTerms: false },
   });
+  const acceptedTerms = useWatch({ control, name: "acceptTerms" });
 
   if (!token) {
     return (
@@ -58,7 +62,7 @@ function SetPasswordContent() {
     try {
       const result = await api<{ message: string }>("/auth/set-password", {
         method: "POST",
-        body: JSON.stringify({ token, password: data.password }),
+        body: JSON.stringify({ token, password: data.password, acceptTerms: data.acceptTerms }),
       });
       setSuccess(result.message);
     } catch (err) {
@@ -108,7 +112,41 @@ function SetPasswordContent() {
           {...register("password")}
         />
 
-        <Button type="submit" isLoading={isSubmitting} className="w-full" size="lg">
+        <label className="flex items-start gap-3 text-sm text-muted leading-relaxed cursor-pointer">
+          <input
+            type="checkbox"
+            className="mt-0.5 h-4 w-4 shrink-0 cursor-pointer accent-primary"
+            {...register("acceptTerms")}
+          />
+          <span>
+            I have read and agree to the{" "}
+            <Link
+              href="/terms"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-semibold text-primary hover:text-primary/80"
+            >
+              Terms of Service
+            </Link>{" "}
+            and{" "}
+            <Link
+              href="/privacy"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-semibold text-primary hover:text-primary/80"
+            >
+              Privacy Policy
+            </Link>
+          </span>
+        </label>
+
+        <Button
+          type="submit"
+          isLoading={isSubmitting}
+          disabled={!acceptedTerms}
+          className="w-full"
+          size="lg"
+        >
           Set Password
         </Button>
       </form>
