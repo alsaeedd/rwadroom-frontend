@@ -15,6 +15,7 @@ const publicPaths = [
   "/community",
   "/partners",
   "/mentors",
+  "/jobs",
   "/resources",
   "/join",
   "/contact",

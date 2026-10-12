@@ -300,11 +300,38 @@ export interface BookingsListResponse {
   past: Booking[];
 }
 
+// ─── Jobs ───────────────────────────────────────────────────────────────────
+
+export type JobType = "FULL_TIME" | "PART_TIME" | "CONTRACT" | "INTERNSHIP";
+export type JobStatus = "PENDING_REVIEW" | "ACTIVE" | "REJECTED" | "CLOSED";
+
+export interface Job {
+  id: string;
+  postedById: string;
+  companyName: string;
+  title: string;
+  description: string;
+  location: string;
+  isRemote: boolean;
+  type: JobType;
+  sector?: Sector | null;
+  applyUrl?: string | null;
+  applyEmail?: string | null;
+  status: JobStatus;
+  rejectionReason?: string | null;
+  expiresAt: string;
+  expired: boolean; // past expiresAt, computed by the API
+  createdAt: string;
+  updatedAt: string;
+  postedBy?: { firstName: string; lastName: string; email: string }; // admin list only
+}
+
 // ─── Analytics ──────────────────────────────────────────────────────────────
 
 export interface AnalyticsOverview {
   users: { total: number; byRole: Record<Role, number> };
   pendingApprovals: { startups: number; mentors: number; partners: number; total: number };
+  jobs: { pendingReview: number };
   subscriptions: { active: number; expired: number; pendingPayment: number };
   introductions: {
     pending: number;

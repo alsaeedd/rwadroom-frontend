@@ -6,6 +6,8 @@ import type {
   Country,
   IndustryFocus,
   IntroductionStatus,
+  JobStatus,
+  JobType,
   Language,
   ProfileStatus,
   Role,
@@ -35,6 +37,24 @@ export const SECTOR_LABEL: Record<Sector, string> = {
 export const SECTOR_OPTIONS: { value: Sector; label: string }[] = (
   Object.keys(SECTOR_LABEL) as Sector[]
 ).map((value) => ({ value, label: SECTOR_LABEL[value] }));
+
+export const JOB_TYPE_LABEL: Record<JobType, string> = {
+  FULL_TIME: "Full-time",
+  PART_TIME: "Part-time",
+  CONTRACT: "Contract",
+  INTERNSHIP: "Internship",
+};
+
+export const JOB_TYPE_OPTIONS: { value: JobType; label: string }[] = (
+  Object.keys(JOB_TYPE_LABEL) as JobType[]
+).map((value) => ({ value, label: JOB_TYPE_LABEL[value] }));
+
+export const JOB_STATUS_LABEL: Record<JobStatus, string> = {
+  PENDING_REVIEW: "Pending review",
+  ACTIVE: "Live",
+  REJECTED: "Rejected",
+  CLOSED: "Closed",
+};
 
 export const BUSINESS_STAGE_LABEL: Record<BusinessStage, string> = {
   IDEA: "Idea",
