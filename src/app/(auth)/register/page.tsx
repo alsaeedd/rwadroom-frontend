@@ -22,6 +22,7 @@ const registerSchema = z.object({
     .regex(/[0-9]/, "Must contain a number")
     .regex(/[^a-zA-Z0-9]/, "Must contain a special character"),
   role: z.enum(["STARTUP", "MENTOR"], "Please select a role"),
+  acceptTerms: z.boolean(),
 });
 
 type RegisterForm = z.infer<typeof registerSchema>;
@@ -39,10 +40,11 @@ export default function RegisterPage() {
     formState: { errors, isSubmitting },
   } = useForm<RegisterForm>({
     resolver: zodResolver(registerSchema),
-    defaultValues: { role: initialRole },
+    defaultValues: { role: initialRole, acceptTerms: false },
   });
 
   const selectedRole = watch("role");
+  const acceptedTerms = watch("acceptTerms");
 
   const onSubmit = async (data: RegisterForm) => {
     setError("");
@@ -144,7 +146,41 @@ export default function RegisterPage() {
           {errors.role && <p className="text-xs font-medium text-danger">{errors.role.message}</p>}
         </div>
 
-        <Button type="submit" isLoading={isSubmitting} className="w-full" size="lg">
+        <label className="flex items-start gap-3 text-sm text-muted leading-relaxed cursor-pointer">
+          <input
+            type="checkbox"
+            className="mt-0.5 h-4 w-4 shrink-0 cursor-pointer accent-primary"
+            {...register("acceptTerms")}
+          />
+          <span>
+            I have read and agree to the{" "}
+            <Link
+              href="/terms"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-semibold text-primary hover:text-primary/80"
+            >
+              Terms of Service
+            </Link>{" "}
+            and{" "}
+            <Link
+              href="/privacy"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-semibold text-primary hover:text-primary/80"
+            >
+              Privacy Policy
+            </Link>
+          </span>
+        </label>
+
+        <Button
+          type="submit"
+          isLoading={isSubmitting}
+          disabled={!acceptedTerms}
+          className="w-full"
+          size="lg"
+        >
           Create Account
         </Button>
       </form>

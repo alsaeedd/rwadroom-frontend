@@ -78,9 +78,11 @@ export default function CommunityMemberPage() {
               {member.companyName}
             </h1>
             <div className="mt-2 flex flex-wrap gap-2">
-              {member.sector && (
-                <Badge variant="info">{SECTOR_LABEL[member.sector]}</Badge>
-              )}
+              {member.sectors?.map((sector) => (
+                <Badge key={sector} variant="info">
+                  {SECTOR_LABEL[sector]}
+                </Badge>
+              ))}
               {member.businessStage && (
                 <Badge variant="neutral">{BUSINESS_STAGE_LABEL[member.businessStage]}</Badge>
               )}

@@ -311,10 +311,14 @@ export default function AdminUserDetailPage() {
                 <div>
                   <span className="text-muted">Company:</span> {startupProfile.companyName}
                 </div>
-                {startupProfile.sector && (
+                <div>
+                  <span className="text-muted">CR number:</span>{" "}
+                  {startupProfile.crNumber || "Not provided"}
+                </div>
+                {startupProfile.sectors.length > 0 && (
                   <div>
-                    <span className="text-muted">Sector:</span>{" "}
-                    {SECTOR_LABEL[startupProfile.sector]}
+                    <span className="text-muted">Sectors:</span>{" "}
+                    {startupProfile.sectors.map((s) => SECTOR_LABEL[s]).join(", ")}
                   </div>
                 )}
                 {startupProfile.businessStage && (
@@ -410,6 +414,32 @@ export default function AdminUserDetailPage() {
                     </div>
                   </div>
                 )}
+                {mentorProfile.linkedinUrl && (
+                  <div className="col-span-2 break-all">
+                    <span className="text-muted">LinkedIn:</span>{" "}
+                    <a
+                      href={mentorProfile.linkedinUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="text-primary hover:underline"
+                    >
+                      {mentorProfile.linkedinUrl}
+                    </a>
+                  </div>
+                )}
+                {mentorProfile.website && (
+                  <div className="col-span-2 break-all">
+                    <span className="text-muted">Website:</span>{" "}
+                    <a
+                      href={mentorProfile.website}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="text-primary hover:underline"
+                    >
+                      {mentorProfile.website}
+                    </a>
+                  </div>
+                )}
                 {mentorProfile.discountNote && (
                   <p className="col-span-2 text-muted">
                     <span className="font-medium">Discount:</span> {mentorProfile.discountNote}
@@ -439,6 +469,10 @@ export default function AdminUserDetailPage() {
               <div className="grid grid-cols-2 gap-3 text-sm">
                 <div>
                   <span className="text-muted">Company:</span> {partnerProfile.companyName}
+                </div>
+                <div>
+                  <span className="text-muted">CR number:</span>{" "}
+                  {partnerProfile.crNumber || "Not provided"}
                 </div>
                 {partnerProfile.serviceCategory && (
                   <div>

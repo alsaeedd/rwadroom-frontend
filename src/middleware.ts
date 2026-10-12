@@ -18,6 +18,8 @@ const publicPaths = [
   "/resources",
   "/join",
   "/contact",
+  "/terms",
+  "/privacy",
 ];
 
 // Treat the root path "/" as public (landing page).

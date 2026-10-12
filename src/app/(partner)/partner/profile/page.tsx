@@ -22,6 +22,12 @@ const SECTOR_VALUES = SECTOR_OPTIONS.map((o) => o.value) as [Sector, ...Sector[]
 
 const schema = z.object({
   companyName: z.string().min(1, "Company name is required"),
+  crNumber: z
+    .string()
+    .trim()
+    .min(1, "CR number is required")
+    .min(3, "CR number must be 3 to 30 characters")
+    .max(30, "CR number must be 3 to 30 characters"),
   serviceCategory: z.enum(SECTOR_VALUES).optional().or(z.literal("")),
   discountDescription: z.string().min(5, "Discount description is required").max(500),
   discountCode: z.string().max(100).optional(),
@@ -59,6 +65,7 @@ export default function PartnerProfilePage() {
         setProfile(p);
         reset({
           companyName: p.companyName,
+          crNumber: p.crNumber || "",
           serviceCategory: p.serviceCategory || "",
           discountDescription: p.discountDescription,
           discountCode: p.discountCode || "",
@@ -167,6 +174,13 @@ export default function PartnerProfilePage() {
               label="Company Name"
               error={errors.companyName?.message}
               {...register("companyName")}
+            />
+            <Input
+              label="CR Number"
+              placeholder="e.g. 123456-1"
+              helper="Your Bahrain commercial registration number"
+              error={errors.crNumber?.message}
+              {...register("crNumber")}
             />
             <Select
               label="Service Category"

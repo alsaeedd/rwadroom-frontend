@@ -385,7 +385,7 @@ function computeProfileCompletion(profile: StartupProfile | null): {
   const checks: { label: string; ok: boolean }[] = [
     { label: "company name", ok: !!profile.companyName },
     { label: "description", ok: !!profile.description && profile.description.length > 30 },
-    { label: "sector", ok: !!profile.sector },
+    { label: "sector", ok: profile.sectors?.length > 0 },
     { label: "business stage", ok: !!profile.businessStage },
     { label: "logo", ok: !!profile.logoUrl },
     { label: "website", ok: !!profile.website },
