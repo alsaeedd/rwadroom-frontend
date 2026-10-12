@@ -82,6 +82,7 @@ export async function api<T = unknown>(
 export async function apiUpload<T = unknown>(
   path: string,
   formData: FormData,
+  method: "POST" | "PATCH" = "POST",
 ): Promise<T> {
   const url = `${API_URL}${path}`;
   const headers: Record<string, string> = {};
@@ -91,7 +92,7 @@ export async function apiUpload<T = unknown>(
   }
 
   let res = await fetch(url, {
-    method: "POST",
+    method,
     headers,
     body: formData,
     credentials: "include",
@@ -107,7 +108,7 @@ export async function apiUpload<T = unknown>(
     if (newToken) {
       headers["Authorization"] = `Bearer ${newToken}`;
       res = await fetch(url, {
-        method: "POST",
+        method,
         headers,
         body: formData,
         credentials: "include",

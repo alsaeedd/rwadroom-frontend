@@ -72,6 +72,7 @@ const navByRole: Record<Role, NavItem[]> = {
   PARTNER: [
     { label: "Dashboard", href: "/partner/dashboard", icon: <LayoutDashboard className="h-4 w-4" /> },
     { label: "My Profile", href: "/partner/profile", icon: <Building2 className="h-4 w-4" /> },
+    { label: "Resources", href: "/partner/resources", icon: <BookOpen className="h-4 w-4" /> },
     { label: "Change Password", href: "/partner/change-password", icon: <KeyRound className="h-4 w-4" /> },
   ],
 };

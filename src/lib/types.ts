@@ -23,7 +23,7 @@ export type SubscriptionStatus = "PENDING_PAYMENT" | "ACTIVE" | "EXPIRED" | "CAN
 export type PaymentStatus = "PENDING" | "COMPLETED" | "FAILED" | "REFUNDED";
 export type ResourceVisibility = "PUBLIC" | "MEMBERS_ONLY";
 export type ResourceType = "FILE" | "LINK";
-export type ResourceStatus = "ACTIVE" | "ARCHIVED";
+export type ResourceStatus = "ACTIVE" | "ARCHIVED" | "PENDING_REVIEW" | "REJECTED";
 export type IntroductionType = "PARTNER_INTRODUCTION" | "MENTOR_SESSION";
 export type IntroductionStatus = "PENDING" | "IN_PROGRESS" | "COMPLETED" | "DECLINED";
 export type Urgency = "LOW" | "MEDIUM" | "HIGH";
@@ -210,6 +210,10 @@ export interface Resource {
   externalUrl?: string | null;
   visibility: ResourceVisibility;
   status: ResourceStatus;
+  rejectionReason?: string | null;
+  publishedAt?: string | null;
+  uploadedById?: string | null;
+  uploadedBy?: { firstName: string; lastName: string; role: Role } | null;
   createdAt: string;
   updatedAt: string;
   category?: ResourceCategory;
@@ -317,7 +321,7 @@ export interface AnalyticsOverview {
     declined: number;
     total: number;
   };
-  resources: { active: number; archived: number; public: number; membersOnly: number };
+  resources: { active: number; archived: number; pendingReview: number; public: number; membersOnly: number };
   newSignupsLast30Days: number;
   generatedAt: string;
 }
