@@ -7,6 +7,7 @@ import { Spinner } from "@/components/ui/spinner";
 import { api } from "@/lib/api";
 import {
   ArrowRightLeft,
+  Briefcase,
   Clock,
   FileText,
   Handshake,
@@ -56,6 +57,14 @@ export default function AdminDashboardPage() {
       icon: Clock,
       href: "/admin/users?status=PENDING",
       highlight: (data?.pendingApprovals.total ?? 0) > 0,
+    },
+    {
+      label: "Jobs awaiting review",
+      value: data?.jobs.pendingReview ?? 0,
+      sub: "Job posts from startups and partners",
+      icon: Briefcase,
+      href: "/admin/jobs",
+      highlight: (data?.jobs.pendingReview ?? 0) > 0,
     },
     {
       label: "Active Subscriptions",
