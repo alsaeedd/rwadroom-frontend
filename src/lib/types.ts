@@ -19,7 +19,7 @@ export interface PaginatedResponse<T> {
 export type Role = "STARTUP" | "MENTOR" | "PARTNER" | "ADMIN";
 export type UserStatus = "INCOMPLETE" | "PENDING" | "APPROVED" | "REJECTED";
 export type ProfileStatus = "PENDING" | "APPROVED" | "REJECTED";
-export type SubscriptionStatus = "PENDING_PAYMENT" | "ACTIVE" | "EXPIRED" | "CANCELLED";
+export type SubscriptionStatus = "PENDING_PAYMENT" | "ACTIVE" | "EXPIRED" | "CANCELLED" | "TRIAL";
 export type PaymentStatus = "PENDING" | "COMPLETED" | "FAILED" | "REFUNDED";
 export type ResourceVisibility = "PUBLIC" | "MEMBERS_ONLY";
 export type ResourceType = "FILE" | "LINK";
@@ -92,6 +92,7 @@ export interface AdminUser {
   createdAt: string;
   updatedAt: string;
   profile?: StartupProfile | MentorProfile | PartnerProfile | null;
+  trialEndsAt?: string | null; // running free trial, admin detail only
 }
 
 // ─── Profiles ───────────────────────────────────────────────────────────────

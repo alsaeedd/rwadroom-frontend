@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Alert } from "@/components/ui/alert";
 import { Modal } from "@/components/ui/modal";
+import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Spinner } from "@/components/ui/spinner";
 import { api, ApiError } from "@/lib/api";
@@ -60,6 +61,8 @@ type ActionId =
   | "promote"
   | "activate-sub"
   | "deactivate-sub"
+  | "trial"
+  | "end-trial"
   | "approve-profile"
   | "reject-profile"
   | "activate-user"
@@ -83,6 +86,7 @@ export default function AdminUserDetailPage() {
     danger?: boolean;
   } | null>(null);
   const [reason, setReason] = useState("");
+  const [trialDays, setTrialDays] = useState(7);
 
   const fetchUser = () => {
     setIsLoading(true);
@@ -152,6 +156,22 @@ export default function AdminUserDetailPage() {
           });
           setSuccess("Subscription deactivated.");
           break;
+        case "trial":
+        case "end-trial": {
+          const { trialEndsAt } = await api<{ trialEndsAt: string | null }>(
+            `/admin/users/${id}/trial`,
+            {
+              method: "POST",
+              body: JSON.stringify({ days: action === "trial" ? trialDays : 0 }),
+            },
+          );
+          setSuccess(
+            trialEndsAt
+              ? `Trial runs until ${new Date(trialEndsAt).toLocaleDateString()}.`
+              : "Trial ended.",
+          );
+          break;
+        }
         case "activate-user":
           await api(`/admin/users/${id}/active`, {
             method: "PATCH",
@@ -605,6 +625,54 @@ export default function AdminUserDetailPage() {
                   <CreditCard className="mr-2 h-4 w-4" /> Activate
                 </Button>
               )}
+            </Card>
+          )}
+
+          {user.role === "STARTUP" && (
+            <Card>
+              <h3 className="font-semibold mb-1">Trial</h3>
+              <p className="text-xs text-muted mb-4">
+                {user.trialEndsAt
+                  ? `Free trial ends ${new Date(user.trialEndsAt).toLocaleDateString()}.`
+                  : "No trial running."}
+              </p>
+              <div className="flex flex-col gap-2">
+                <Input
+                  label="Days"
+                  type="number"
+                  min={1}
+                  max={365}
+                  value={Number.isNaN(trialDays) ? "" : trialDays}
+                  onChange={(e) => setTrialDays(e.target.valueAsNumber)}
+                />
+                <Button
+                  variant="secondary"
+                  className="w-full"
+                  disabled={!(trialDays >= 1 && trialDays <= 365)}
+                  isLoading={actionLoading === "trial"}
+                  onClick={() => performAction("trial")}
+                >
+                  Start / extend trial
+                </Button>
+                {user.trialEndsAt && (
+                  <Button
+                    variant="outline"
+                    className="w-full"
+                    isLoading={actionLoading === "end-trial"}
+                    onClick={() =>
+                      setConfirmModal({
+                        action: "end-trial",
+                        title: "End Trial",
+                        message:
+                          "End the free trial now? They lose member access unless they have a paid membership.",
+                        danger: true,
+                      })
+                    }
+                  >
+                    End trial now
+                  </Button>
+                )}
+              </div>
             </Card>
           )}
 

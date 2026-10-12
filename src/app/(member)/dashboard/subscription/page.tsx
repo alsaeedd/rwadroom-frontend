@@ -21,6 +21,7 @@ interface SubscriptionStatusResponse {
     status: SubscriptionStatus;
     currentPeriodStart: string;
     currentPeriodEnd: string;
+    daysLeft?: number | null;
     createdAt: string;
     lastPayment?: {
       amount: number;
@@ -33,9 +34,10 @@ interface SubscriptionStatusResponse {
 
 const statusVariant: Record<
   SubscriptionStatus,
-  "success" | "warning" | "danger" | "neutral"
+  "success" | "warning" | "danger" | "neutral" | "info"
 > = {
   ACTIVE: "success",
+  TRIAL: "info",
   PENDING_PAYMENT: "warning",
   EXPIRED: "danger",
   CANCELLED: "neutral",
@@ -113,6 +115,7 @@ function SubscriptionContent() {
   const isActive =
     user?.subscriptionActive ?? data?.subscriptionActive ?? false;
   const sub = data?.subscription;
+  const onTrial = sub?.status === "TRIAL";
 
   return (
     <div>
@@ -151,7 +154,7 @@ function SubscriptionContent() {
             </div>
             <div>
               <h2 className="text-lg font-bold">
-                {isActive ? "Active Member" : "No Active Subscription"}
+                {onTrial ? "Free Trial" : isActive ? "Active Member" : "No Active Subscription"}
               </h2>
               {sub?.status && (
                 <Badge variant={statusVariant[sub.status] || "neutral"}>
@@ -161,7 +164,17 @@ function SubscriptionContent() {
             </div>
           </div>
 
-          {sub && isActive && (
+          {sub && onTrial && (
+            <p className="text-sm text-muted border-t border-border pt-4 mb-4">
+              <span className="font-medium text-foreground">
+                {sub.daysLeft} day{sub.daysLeft === 1 ? "" : "s"} left
+              </span>{" "}
+              · ends {new Date(sub.currentPeriodEnd).toLocaleDateString()}. Subscribe any time to keep
+              your access for a full year.
+            </p>
+          )}
+
+          {sub && isActive && !onTrial && (
             <div className="grid grid-cols-2 gap-4 text-sm border-t border-border pt-4">
               <div>
                 <p className="text-muted text-xs font-semibold uppercase tracking-wide mb-1">
@@ -178,7 +191,7 @@ function SubscriptionContent() {
             </div>
           )}
 
-          {!isActive && (
+          {(!isActive || onTrial) && (
             <Button
               className="w-full mt-2"
               size="lg"

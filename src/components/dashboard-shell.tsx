@@ -24,6 +24,7 @@ import {
   UserCircle,
   CalendarDays,
   CalendarClock,
+  Settings,
 } from "lucide-react";
 
 // Dashboard root paths need exact match; sub-pages use startsWith
@@ -47,6 +48,7 @@ const navByRole: Record<Role, NavItem[]> = {
     { label: "Resources", href: "/admin/resources", icon: <FileText className="h-4 w-4" /> },
     { label: "Introductions", href: "/admin/introductions", icon: <ArrowRightLeft className="h-4 w-4" /> },
     { label: "Invite Partner", href: "/admin/partners/invite", icon: <Handshake className="h-4 w-4" /> },
+    { label: "Settings", href: "/admin/settings", icon: <Settings className="h-4 w-4" /> },
     { label: "Change Password", href: "/admin/change-password", icon: <KeyRound className="h-4 w-4" /> },
   ],
   STARTUP: [

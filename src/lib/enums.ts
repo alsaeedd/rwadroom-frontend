@@ -140,6 +140,7 @@ export const SUBSCRIPTION_STATUS_LABEL: Record<SubscriptionStatus, string> = {
   ACTIVE: "Active",
   EXPIRED: "Expired",
   CANCELLED: "Cancelled",
+  TRIAL: "Free Trial",
 };
 
 export const INTRODUCTION_STATUS_LABEL: Record<IntroductionStatus, string> = {

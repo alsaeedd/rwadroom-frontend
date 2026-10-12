@@ -15,6 +15,7 @@ import { FileUpload } from "@/components/ui/file-upload";
 import { Alert } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Spinner } from "@/components/ui/spinner";
+import { DeleteAccountCard } from "@/components/delete-account-card";
 import { api, apiUpload, ApiError } from "@/lib/api";
 import { useAuthStore } from "@/lib/auth";
 import {
@@ -99,7 +100,13 @@ export default function StartupProfilePage() {
       });
       setProfile(result);
       setIsCreate(false);
-      setSuccess(isCreate ? "Profile submitted for review." : "Profile updated.");
+      setSuccess(
+        !isCreate
+          ? "Profile updated."
+          : result.status === "APPROVED"
+            ? "Profile created. Your account is approved."
+            : "Profile submitted for review.",
+      );
       // Submitting/resubmitting flips the account status (INCOMPLETE/REJECTED ->
       // PENDING). Refresh the cached user so the layout reflects the new state.
       await fetchUser();
@@ -299,6 +306,8 @@ export default function StartupProfilePage() {
               </div>
             </Card>
           )}
+
+          {!isCreate && <DeleteAccountCard />}
         </div>
       </div>
     </div>
