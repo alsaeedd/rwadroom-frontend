@@ -13,6 +13,7 @@ import { FileUpload } from "@/components/ui/file-upload";
 import { Alert } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Spinner } from "@/components/ui/spinner";
+import { DeleteAccountCard } from "@/components/delete-account-card";
 import { api, apiUpload, ApiError } from "@/lib/api";
 import { useAuthStore } from "@/lib/auth";
 import { PROFILE_STATUS_LABEL, SECTOR_OPTIONS } from "@/lib/enums";
@@ -276,6 +277,8 @@ export default function PartnerProfilePage() {
               </div>
             </Card>
           )}
+
+          {!isCreate && <DeleteAccountCard />}
         </div>
       </div>
     </div>

@@ -13,6 +13,7 @@ import { FileUpload } from "@/components/ui/file-upload";
 import { Alert } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Spinner } from "@/components/ui/spinner";
+import { DeleteAccountCard } from "@/components/delete-account-card";
 import { api, apiUpload, ApiError } from "@/lib/api";
 import { useAuthStore } from "@/lib/auth";
 import {
@@ -106,7 +107,13 @@ export default function MentorProfilePage() {
       });
       setProfile(result);
       setIsCreate(false);
-      setSuccess(isCreate ? "Profile submitted for review." : "Profile updated.");
+      setSuccess(
+        !isCreate
+          ? "Profile updated."
+          : result.status === "APPROVED"
+            ? "Profile created. Your account is approved."
+            : "Profile submitted for review.",
+      );
       await fetchUser();
     } catch (err) {
       setError(err instanceof ApiError ? err.message : "Failed to save profile.");
@@ -312,6 +319,8 @@ export default function MentorProfilePage() {
               </div>
             </Card>
           )}
+
+          {!isCreate && <DeleteAccountCard />}
         </div>
       </div>
     </div>

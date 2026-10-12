@@ -35,6 +35,7 @@ interface SubscriptionStatus {
     status: string;
     currentPeriodStart: string;
     currentPeriodEnd: string;
+    daysLeft?: number | null;
   } | null;
 }
 
@@ -82,9 +83,8 @@ export default function StartupDashboardPage() {
   const periodEnd = subStatus?.subscription?.currentPeriodEnd
     ? new Date(subStatus.subscription.currentPeriodEnd)
     : null;
-  const daysLeft = periodEnd
-    ? Math.max(0, Math.ceil((periodEnd.getTime() - Date.now()) / (24 * 60 * 60 * 1000)))
-    : 0;
+  const daysLeft = subStatus?.subscription?.daysLeft ?? 0;
+  const onTrial = subStatus?.subscription?.status === "TRIAL";
 
   const isIncomplete = user?.status === "INCOMPLETE";
   const isRejected = user?.status === "REJECTED";
@@ -210,7 +210,7 @@ export default function StartupDashboardPage() {
                 Subscription
               </p>
               <h3 className="text-lg font-semibold mt-1">
-                {subActive ? "Active" : "Not subscribed"}
+                {onTrial ? "Free trial" : subActive ? "Active" : "Not subscribed"}
               </h3>
             </div>
             <div
@@ -228,7 +228,7 @@ export default function StartupDashboardPage() {
           {subActive && periodEnd ? (
             <>
               <p className="text-sm text-muted mb-1">
-                Renews on{" "}
+                {onTrial ? "Ends on" : "Renews on"}{" "}
                 <span className="font-medium text-foreground">
                   {periodEnd.toLocaleDateString("en-GB", {
                     day: "numeric",
@@ -238,6 +238,7 @@ export default function StartupDashboardPage() {
                 </span>
               </p>
               <p className="text-sm text-muted">
+                {onTrial && "Free trial · "}
                 <span className="font-medium text-foreground">{daysLeft}</span> day
                 {daysLeft === 1 ? "" : "s"} left
               </p>
