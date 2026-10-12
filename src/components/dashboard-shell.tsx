@@ -24,6 +24,7 @@ import {
   UserCircle,
   CalendarDays,
   CalendarClock,
+  LifeBuoy,
 } from "lucide-react";
 
 // Dashboard root paths need exact match; sub-pages use startsWith
@@ -46,6 +47,7 @@ const navByRole: Record<Role, NavItem[]> = {
     { label: "Users", href: "/admin/users", icon: <Users className="h-4 w-4" /> },
     { label: "Resources", href: "/admin/resources", icon: <FileText className="h-4 w-4" /> },
     { label: "Introductions", href: "/admin/introductions", icon: <ArrowRightLeft className="h-4 w-4" /> },
+    { label: "Tickets", href: "/admin/tickets", icon: <LifeBuoy className="h-4 w-4" /> },
     { label: "Invite Partner", href: "/admin/partners/invite", icon: <Handshake className="h-4 w-4" /> },
     { label: "Change Password", href: "/admin/change-password", icon: <KeyRound className="h-4 w-4" /> },
   ],
@@ -58,6 +60,7 @@ const navByRole: Record<Role, NavItem[]> = {
     { label: "Mentors", href: "/dashboard/mentors", icon: <GraduationCap className="h-4 w-4" /> },
     { label: "My Sessions", href: "/dashboard/sessions", icon: <CalendarDays className="h-4 w-4" /> },
     { label: "Introductions", href: "/dashboard/introductions", icon: <ArrowRightLeft className="h-4 w-4" /> },
+    { label: "Support", href: "/dashboard/support", icon: <LifeBuoy className="h-4 w-4" /> },
     { label: "Change Password", href: "/dashboard/change-password", icon: <KeyRound className="h-4 w-4" /> },
   ],
   MENTOR: [
@@ -65,11 +68,13 @@ const navByRole: Record<Role, NavItem[]> = {
     { label: "My Profile", href: "/mentor/profile", icon: <UserCircle className="h-4 w-4" /> },
     { label: "Availability", href: "/mentor/availability", icon: <CalendarClock className="h-4 w-4" /> },
     { label: "Sessions", href: "/mentor/sessions", icon: <CalendarDays className="h-4 w-4" /> },
+    { label: "Support", href: "/mentor/support", icon: <LifeBuoy className="h-4 w-4" /> },
     { label: "Change Password", href: "/mentor/change-password", icon: <KeyRound className="h-4 w-4" /> },
   ],
   PARTNER: [
     { label: "Dashboard", href: "/partner/dashboard", icon: <LayoutDashboard className="h-4 w-4" /> },
     { label: "My Profile", href: "/partner/profile", icon: <Building2 className="h-4 w-4" /> },
+    { label: "Support", href: "/partner/support", icon: <LifeBuoy className="h-4 w-4" /> },
     { label: "Change Password", href: "/partner/change-password", icon: <KeyRound className="h-4 w-4" /> },
   ],
 };

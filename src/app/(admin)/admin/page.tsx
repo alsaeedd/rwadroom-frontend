@@ -10,6 +10,7 @@ import {
   Clock,
   FileText,
   Handshake,
+  LifeBuoy,
   Shield,
   Sparkles,
   TrendingUp,
@@ -75,6 +76,14 @@ export default function AdminDashboardPage() {
       href: "/admin/introductions?status=PENDING",
       highlight: (data?.introductions.pending ?? 0) > 0,
     },
+    {
+      label: "Open Tickets",
+      value: data?.tickets?.open ?? 0, // ?. tolerates a backend deployed before this page
+      sub: "Support requests waiting on the team",
+      icon: LifeBuoy,
+      href: "/admin/tickets?status=OPEN",
+      highlight: (data?.tickets?.open ?? 0) > 0,
+    },
   ];
 
   return (
@@ -94,7 +103,7 @@ export default function AdminDashboardPage() {
       </div>
 
       {/* Stats grid */}
-      <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4 mb-10">
+      <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-5 mb-10">
         {cards.map((card) => (
           <Link key={card.label} href={card.href}>
             <Card className="group cursor-pointer hover:shadow-lg hover:scale-[1.01] transition-all duration-200 h-full">
