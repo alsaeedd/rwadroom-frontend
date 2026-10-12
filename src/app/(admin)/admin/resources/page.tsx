@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { DataTable, type Column } from "@/components/ui/data-table";
 import { SearchInput } from "@/components/ui/search-input";
 import { Select } from "@/components/ui/select";
@@ -8,11 +8,13 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Alert } from "@/components/ui/alert";
 import { Modal } from "@/components/ui/modal";
+import { Textarea } from "@/components/ui/textarea";
 import { usePaginatedQuery } from "@/lib/hooks/use-paginated-query";
 import { api, ApiError } from "@/lib/api";
-import type { Resource } from "@/lib/types";
-import { ArchiveRestore, Plus, Pencil, Archive, Trash2, ExternalLink, FileIcon } from "lucide-react";
-import { useState } from "react";
+import { ROLE_LABEL } from "@/lib/enums";
+import type { Resource, ResourceStatus } from "@/lib/types";
+import { ArchiveRestore, Plus, Pencil, Archive, Trash2, ExternalLink, FileIcon, Eye, Check, X } from "lucide-react";
+import { Suspense, useState } from "react";
 import Link from "next/link";
 
 const visibilityOptions = [
@@ -23,18 +25,78 @@ const visibilityOptions = [
 
 const statusOptions = [
   { value: "", label: "All Statuses" },
+  { value: "PENDING_REVIEW", label: "Pending review" },
   { value: "ACTIVE", label: "Active" },
+  { value: "REJECTED", label: "Rejected" },
   { value: "ARCHIVED", label: "Archived" },
 ];
 
-export default function AdminResourcesPage() {
+const statusBadge: Record<ResourceStatus, { label: string; variant: "success" | "warning" | "danger" | "neutral" }> = {
+  ACTIVE: { label: "Active", variant: "success" },
+  PENDING_REVIEW: { label: "Pending review", variant: "warning" },
+  REJECTED: { label: "Rejected", variant: "danger" },
+  ARCHIVED: { label: "Archived", variant: "neutral" },
+};
+
+function AdminResourcesPageContent() {
   const router = useRouter();
+  const sp = useSearchParams();
   const { data, meta, isLoading, search, filters, setSearch, setFilters, setPage, refresh } =
-    usePaginatedQuery<Resource>({ path: "/admin/resources" });
+    usePaginatedQuery<Resource>({
+      path: "/admin/resources",
+      // The admin home card and the submission email deep-link with ?status=
+      initialFilters: { status: sp.get("status") ?? undefined },
+    });
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [deleteModal, setDeleteModal] = useState<Resource | null>(null);
   const [deleting, setDeleting] = useState(false);
+  const [rejectModal, setRejectModal] = useState<Resource | null>(null);
+  const [reason, setReason] = useState("");
+  const [rejecting, setRejecting] = useState(false);
+
+  const handleApprove = async (resource: Resource) => {
+    try {
+      await api(`/admin/resources/${resource.id}/approve`, { method: "POST" });
+      setSuccess(`"${resource.title}" is live. The member has been emailed.`);
+      refresh();
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : "Approve failed.");
+    }
+  };
+
+  const handleReject = async () => {
+    if (!rejectModal) return;
+    setRejecting(true);
+    try {
+      await api(`/admin/resources/${rejectModal.id}/reject`, {
+        method: "POST",
+        body: JSON.stringify({ reason: reason.trim() }),
+      });
+      setSuccess("Submission rejected. The member has been emailed the reason.");
+      setRejectModal(null);
+      setReason("");
+      refresh();
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : "Reject failed.");
+    } finally {
+      setRejecting(false);
+    }
+  };
+
+  // Pending files aren't public yet; the download endpoint presigns them for admins.
+  const handleOpen = async (resource: Resource) => {
+    if (resource.type === "LINK") {
+      if (resource.externalUrl) window.open(resource.externalUrl, "_blank");
+      return;
+    }
+    try {
+      const { downloadUrl } = await api<{ downloadUrl: string }>(`/resources/${resource.id}/download`);
+      window.open(downloadUrl, "_blank");
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : "Could not open the file.");
+    }
+  };
 
   const handleDelete = async () => {
     if (!deleteModal) return;
@@ -75,6 +137,7 @@ export default function AdminResourcesPage() {
     {
       key: "title",
       header: "Title",
+      className: "min-w-56",
       render: (r) => (
         <div className="flex items-center gap-2">
           {r.type === "LINK" ? (
@@ -85,6 +148,11 @@ export default function AdminResourcesPage() {
           <div>
             <p className="font-medium text-foreground">{r.title}</p>
             {r.category && <p className="text-xs text-muted">{r.category.name}</p>}
+            {r.uploadedBy && (
+              <p className="text-xs text-muted">
+                by {r.uploadedBy.firstName} {r.uploadedBy.lastName} · {ROLE_LABEL[r.uploadedBy.role]}
+              </p>
+            )}
           </div>
         </div>
       ),
@@ -107,9 +175,14 @@ export default function AdminResourcesPage() {
       key: "status",
       header: "Status",
       render: (r) => (
-        <Badge variant={r.status === "ACTIVE" ? "success" : "neutral"}>
-          {r.status}
-        </Badge>
+        <div>
+          <Badge variant={statusBadge[r.status].variant} className="whitespace-nowrap">
+            {statusBadge[r.status].label}
+          </Badge>
+          {r.status === "REJECTED" && r.rejectionReason && (
+            <p className="text-xs text-muted mt-1 max-w-56">{r.rejectionReason}</p>
+          )}
+        </div>
       ),
     },
     {
@@ -118,14 +191,28 @@ export default function AdminResourcesPage() {
       className: "w-32",
       render: (r) => (
         <div className="flex items-center gap-1">
+          {r.status === "PENDING_REVIEW" && (
+            <>
+              <Button variant="ghost" size="sm" onClick={() => handleOpen(r)} title="Open">
+                <Eye className="h-3.5 w-3.5" />
+              </Button>
+              <Button variant="outline" size="sm" onClick={() => handleApprove(r)}>
+                <Check className="mr-1 h-3.5 w-3.5" /> Approve
+              </Button>
+              <Button variant="ghost" size="sm" onClick={() => setRejectModal(r)} className="text-danger hover:text-danger">
+                <X className="mr-1 h-3.5 w-3.5" /> Reject
+              </Button>
+            </>
+          )}
           <Button variant="ghost" size="sm" onClick={() => router.push(`/admin/resources/${r.id}/edit`)}>
             <Pencil className="h-3.5 w-3.5" />
           </Button>
-          {r.status === "ACTIVE" ? (
+          {r.status === "ACTIVE" && (
             <Button variant="ghost" size="sm" onClick={() => handleArchive(r)} title="Archive">
               <Archive className="h-3.5 w-3.5" />
             </Button>
-          ) : (
+          )}
+          {r.status === "ARCHIVED" && (
             <Button variant="ghost" size="sm" onClick={() => handleUnarchive(r)} title="Restore">
               <ArchiveRestore className="h-3.5 w-3.5" />
             </Button>
@@ -170,7 +257,7 @@ export default function AdminResourcesPage() {
           options={statusOptions}
           value={filters.status || ""}
           onChange={(e) => setFilters({ ...filters, status: e.target.value || undefined })}
-          className="w-full sm:w-36"
+          className="w-full sm:w-44"
         />
       </div>
 
@@ -197,6 +284,35 @@ export default function AdminResourcesPage() {
           </div>
         </Modal>
       )}
+
+      {rejectModal && (
+        <Modal open={true} onClose={() => setRejectModal(null)} title="Reject submission">
+          <p className="text-sm text-muted mb-4">
+            Tell the member what to fix in &quot;{rejectModal.title}&quot;. They get this by email and can edit and resubmit.
+          </p>
+          <Textarea
+            label="Reason"
+            value={reason}
+            onChange={(e) => setReason(e.target.value)}
+            maxLength={500}
+            placeholder="e.g. The link points to a page that needs a login."
+          />
+          <div className="flex gap-3 justify-end mt-6">
+            <Button variant="ghost" onClick={() => setRejectModal(null)}>Cancel</Button>
+            <Button variant="danger" isLoading={rejecting} disabled={!reason.trim()} onClick={handleReject}>
+              Reject
+            </Button>
+          </div>
+        </Modal>
+      )}
     </div>
+  );
+}
+
+export default function AdminResourcesPage() {
+  return (
+    <Suspense>
+      <AdminResourcesPageContent />
+    </Suspense>
   );
 }

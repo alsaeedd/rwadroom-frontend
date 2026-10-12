@@ -1,8 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { MySubmissions } from "@/components/my-resources";
 import { SearchInput } from "@/components/ui/search-input";
 import { Badge } from "@/components/ui/badge";
 import { Spinner } from "@/components/ui/spinner";
@@ -12,11 +15,12 @@ import { usePaginatedQuery } from "@/lib/hooks/use-paginated-query";
 import { api } from "@/lib/api";
 import { useAuthStore } from "@/lib/auth";
 import type { Resource, ResourceCategory } from "@/lib/types";
-import { BookOpen, Lock, ExternalLink, FileIcon } from "lucide-react";
+import { BookOpen, Lock, ExternalLink, FileIcon, Plus } from "lucide-react";
 
 export default function ResourceLibraryPage() {
   const router = useRouter();
   const subscriptionActive = useAuthStore((s) => s.user?.subscriptionActive);
+  const canShare = useAuthStore((s) => s.user?.status === "APPROVED");
   const [categories, setCategories] = useState<ResourceCategory[]>([]);
   const [activeCategory, setActiveCategory] = useState("");
 
@@ -34,10 +38,19 @@ export default function ResourceLibraryPage() {
 
   return (
     <div>
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold tracking-tight">Resources</h1>
-        <p className="text-muted mt-1">Guides, templates, and tools for your startup.</p>
+      <div className="mb-8 flex flex-wrap items-start justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">Resources</h1>
+          <p className="text-muted mt-1">Guides, templates, and tools for your startup.</p>
+        </div>
+        {canShare && (
+          <Link href="/dashboard/resources/new">
+            <Button size="sm"><Plus className="mr-1.5 h-4 w-4" /> Share a resource</Button>
+          </Link>
+        )}
       </div>
+
+      <MySubmissions base="/dashboard/resources" />
 
       <div className="mb-6 flex flex-col sm:flex-row gap-3">
         <SearchInput value={search} onChange={setSearch} placeholder="Search resources..." className="flex-1" />

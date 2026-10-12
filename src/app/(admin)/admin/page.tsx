@@ -75,6 +75,14 @@ export default function AdminDashboardPage() {
       href: "/admin/introductions?status=PENDING",
       highlight: (data?.introductions.pending ?? 0) > 0,
     },
+    {
+      label: "Resources Awaiting Review",
+      value: data?.resources.pendingReview ?? 0,
+      sub: "Shared by startups and partners",
+      icon: FileText,
+      href: "/admin/resources?status=PENDING_REVIEW",
+      highlight: (data?.resources.pendingReview ?? 0) > 0,
+    },
   ];
 
   return (
