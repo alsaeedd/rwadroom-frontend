@@ -323,5 +323,30 @@ export interface AnalyticsOverview {
   };
   resources: { active: number; archived: number; pendingReview: number; public: number; membersOnly: number };
   newSignupsLast30Days: number;
+  tickets: { open: number };
   generatedAt: string;
+}
+
+// ─── Support tickets ────────────────────────────────────────────────────────
+
+export type TicketStatus = "OPEN" | "ANSWERED" | "CLOSED";
+
+export interface TicketMessage {
+  id: string;
+  body: string;
+  isStaff: boolean;
+  createdAt: string;
+  author?: { firstName: string; lastName: string };
+}
+
+/** List rows carry lastMessage; the thread carries user + messages. */
+export interface SupportTicket {
+  id: string;
+  subject: string;
+  status: TicketStatus;
+  createdAt: string;
+  updatedAt: string;
+  user?: { id: string; firstName: string; lastName: string; email: string; role: Role };
+  lastMessage?: { body: string; isStaff: boolean; createdAt: string } | null;
+  messages?: TicketMessage[];
 }
