@@ -75,14 +75,14 @@ function SubscriptionContent() {
       if (result.checkoutUrl) {
         window.location.href = result.checkoutUrl;
       } else {
-        setError("Checkout returned no URL. Please try again.");
+        setError("We couldn't start checkout. Try again in a moment.");
         setCheckoutLoading(false);
       }
     } catch (err) {
       setError(
         err instanceof ApiError
           ? err.message
-          : "Checkout failed. Please try again.",
+          : "Could not start checkout. Check your connection and try again.",
       );
       setCheckoutLoading(false);
     }

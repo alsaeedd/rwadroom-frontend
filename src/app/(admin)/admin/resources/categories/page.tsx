@@ -16,9 +16,13 @@ import type { ResourceCategory } from "@/lib/types";
 import { ArrowLeft, FolderOpen, Trash2 } from "lucide-react";
 
 const schema = z.object({
-  name: z.string().min(1, "Name is required").max(100),
-  slug: z.string().min(1, "Slug is required").max(100).regex(/^[a-z0-9-]+$/, "Lowercase letters, numbers, and hyphens only"),
-  description: z.string().max(500).optional(),
+  name: z.string().min(1, "Enter a name").max(100, "Name must be 100 characters or fewer"),
+  slug: z
+    .string()
+    .min(1, "Enter a slug")
+    .max(100, "Slug must be 100 characters or fewer")
+    .regex(/^[a-z0-9-]+$/, "Use only lowercase letters, numbers and hyphens"),
+  description: z.string().max(500, "Description must be 500 characters or fewer").optional(),
   sortOrder: z.number().int().optional(),
 });
 

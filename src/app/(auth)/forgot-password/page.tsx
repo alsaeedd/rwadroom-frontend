@@ -12,7 +12,7 @@ import { api, ApiError } from "@/lib/api";
 import { Mail, ArrowLeft } from "lucide-react";
 
 const schema = z.object({
-  email: z.string().email("Please enter a valid email"),
+  email: z.string().min(1, "Enter your email address").email("Enter an email address in the correct format, like name@example.com"),
 });
 
 type ForgotForm = z.infer<typeof schema>;
@@ -42,7 +42,7 @@ export default function ForgotPasswordPage() {
       if (err instanceof ApiError) {
         setError(err.message);
       } else {
-        setError("Something went wrong. Please try again.");
+        setError("Could not reach Rwad Room. Check your connection and try again.");
       }
     }
   };

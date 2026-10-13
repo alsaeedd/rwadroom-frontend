@@ -17,9 +17,9 @@ const schema = z.object({
   password: z
     .string()
     .min(8, "Password must be at least 8 characters")
-    .regex(/[A-Z]/, "Must contain an uppercase letter")
-    .regex(/[0-9]/, "Must contain a number")
-    .regex(/[^a-zA-Z0-9]/, "Must contain a special character"),
+    .regex(/[A-Z]/, "Add an uppercase letter to your password")
+    .regex(/[0-9]/, "Add a number to your password")
+    .regex(/[^a-zA-Z0-9]/, "Add a symbol to your password, like ! or #"),
   acceptTerms: z.boolean(),
 });
 
@@ -49,7 +49,7 @@ function SetPasswordContent() {
           <XCircle className="h-8 w-8 text-danger" />
         </div>
         <h1 className="text-2xl font-bold mb-3">Invalid Invite Link</h1>
-        <p className="text-muted text-sm mb-8 max-w-xs mx-auto">No invite token found. Please contact the administrator.</p>
+        <p className="text-muted text-sm mb-8 max-w-xs mx-auto">This invite link is incomplete. Email hello@rwadroom.com for a new one.</p>
         <Link href="/login">
           <Button variant="secondary" className="w-full">Back to Sign In</Button>
         </Link>
@@ -69,7 +69,7 @@ function SetPasswordContent() {
       if (err instanceof ApiError) {
         setError(err.message);
       } else {
-        setError("Something went wrong. Please try again.");
+        setError("Could not reach Rwad Room. Check your connection and try again.");
       }
     }
   };

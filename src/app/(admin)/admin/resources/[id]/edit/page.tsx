@@ -17,11 +17,11 @@ import type { Resource, ResourceCategory } from "@/lib/types";
 import { ArrowLeft } from "lucide-react";
 
 const schema = z.object({
-  title: z.string().min(1, "Title is required").max(200),
-  description: z.string().max(1000).optional(),
-  categoryId: z.string().min(1, "Category is required"),
+  title: z.string().min(1, "Enter a title").max(200, "Title must be 200 characters or fewer"),
+  description: z.string().max(1000, "Description must be 1000 characters or fewer").optional(),
+  categoryId: z.string().min(1, "Choose a category"),
   visibility: z.enum(["PUBLIC", "MEMBERS_ONLY"]),
-  externalUrl: z.string().url("Must be a valid URL").optional().or(z.literal("")),
+  externalUrl: z.string().url("Enter the link in the correct format, like https://example.com").optional().or(z.literal("")),
 });
 
 type EditForm = z.infer<typeof schema>;

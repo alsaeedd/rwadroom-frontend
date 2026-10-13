@@ -14,8 +14,8 @@ import { useAuthStore, getDashboardPath } from "@/lib/auth";
 import { ApiError } from "@/lib/api";
 
 const loginSchema = z.object({
-  email: z.string().email("Please enter a valid email"),
-  password: z.string().min(1, "Password is required"),
+  email: z.string().min(1, "Enter your email address").email("Enter an email address in the correct format, like name@example.com"),
+  password: z.string().min(1, "Enter your password"),
 });
 
 type LoginForm = z.infer<typeof loginSchema>;
@@ -48,7 +48,7 @@ function LoginContent() {
       if (err instanceof ApiError) {
         setError(err.message);
       } else {
-        setError("Something went wrong. Please try again.");
+        setError("Could not reach Rwad Room. Check your connection and try again.");
       }
     }
   };
@@ -63,16 +63,6 @@ function LoginContent() {
       {error && (
         <div className="mb-6 rounded-xl bg-danger/8 px-4 py-3.5 text-sm font-medium text-danger border border-danger/10">
           {error}
-          {/deactivated/i.test(error) && (
-            <>
-              {" "}
-              Email{" "}
-              <a className="underline" href="mailto:hello@rwadroom.com">
-                hello@rwadroom.com
-              </a>{" "}
-              to restore access.
-            </>
-          )}
         </div>
       )}
 

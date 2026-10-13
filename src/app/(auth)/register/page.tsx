@@ -13,15 +13,15 @@ import { api, ApiError } from "@/lib/api";
 import { Mail } from "lucide-react";
 
 const registerSchema = z.object({
-  fullName: z.string().min(2, "Full name is required"),
-  email: z.string().email("Please enter a valid email"),
+  fullName: z.string().min(2, "Enter your full name"),
+  email: z.string().min(1, "Enter your email address").email("Enter an email address in the correct format, like name@example.com"),
   password: z
     .string()
     .min(8, "Password must be at least 8 characters")
-    .regex(/[A-Z]/, "Must contain an uppercase letter")
-    .regex(/[0-9]/, "Must contain a number")
-    .regex(/[^a-zA-Z0-9]/, "Must contain a special character"),
-  role: z.enum(["STARTUP", "MENTOR"], "Please select a role"),
+    .regex(/[A-Z]/, "Add an uppercase letter to your password")
+    .regex(/[0-9]/, "Add a number to your password")
+    .regex(/[^a-zA-Z0-9]/, "Add a symbol to your password, like ! or #"),
+  role: z.enum(["STARTUP", "MENTOR"], "Choose startup or mentor"),
   acceptTerms: z.boolean(),
 });
 
@@ -59,7 +59,7 @@ export default function RegisterPage() {
       if (err instanceof ApiError) {
         setError(err.message);
       } else {
-        setError("Something went wrong. Please try again.");
+        setError("Could not reach Rwad Room. Check your connection and try again.");
       }
     }
   };

@@ -31,18 +31,18 @@ const STAGE_VALUES = BUSINESS_STAGE_OPTIONS.map((o) => o.value) as [BusinessStag
 const COUNTRY_VALUES = COUNTRY_OPTIONS.map((o) => o.value) as [Country, ...Country[]];
 
 const schema = z.object({
-  companyName: z.string().min(1, "Company name is required"),
+  companyName: z.string().min(1, "Enter your company name"),
   crNumber: z
     .string()
     .trim()
-    .min(1, "CR number is required")
+    .min(1, "Enter your CR number")
     .min(3, "CR number must be 3 to 30 characters")
     .max(30, "CR number must be 3 to 30 characters"),
-  description: z.string().max(2000).optional(),
-  sectors: z.array(z.enum(SECTOR_VALUES)).max(5, "Pick up to 5 sectors"),
+  description: z.string().max(2000, "Description must be 2000 characters or fewer").optional(),
+  sectors: z.array(z.enum(SECTOR_VALUES)).max(5, "Choose up to 5 sectors"),
   businessStage: z.enum(STAGE_VALUES).optional().or(z.literal("")),
-  locations: z.array(z.enum(COUNTRY_VALUES)).min(1, "Pick at least one location"),
-  website: z.string().url("Must be a valid URL").optional().or(z.literal("")),
+  locations: z.array(z.enum(COUNTRY_VALUES)).min(1, "Choose at least one location"),
+  website: z.string().url("Enter your website in the correct format, like https://example.com").optional().or(z.literal("")),
 });
 
 type ProfileForm = z.infer<typeof schema>;

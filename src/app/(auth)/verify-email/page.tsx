@@ -22,7 +22,7 @@ function VerifyEmailContent() {
     sent.current = true;
     if (!token) {
       setStatus("error");
-      setMessage("No verification token provided.");
+      setMessage("This verification link is incomplete. Open the link from your email again.");
       return;
     }
 
