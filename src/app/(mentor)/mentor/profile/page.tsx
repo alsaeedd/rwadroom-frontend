@@ -40,7 +40,11 @@ const schema = z.object({
   discountNote: z.string().max(500, "Discount note must be 500 characters or fewer").optional(),
   linkedinUrl: z.string().url("Enter your LinkedIn URL in the correct format, like https://linkedin.com/in/yourname").optional().or(z.literal("")),
   website: z.string().url("Enter your website in the correct format, like https://example.com").optional().or(z.literal("")),
-}).refine((d) => d.linkedinUrl || d.website, { message: LINK_HELP, path: ["linkedinUrl"] });
+}).superRefine((d, ctx) => {
+  // Either link satisfies the rule, so flag both fields rather than singling out LinkedIn.
+  if (d.linkedinUrl || d.website) return;
+  for (const path of [["linkedinUrl"], ["website"]]) ctx.addIssue({ code: "custom", message: LINK_HELP, path });
+});
 
 type ProfileForm = z.infer<typeof schema>;
 

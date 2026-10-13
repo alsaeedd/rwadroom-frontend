@@ -204,7 +204,7 @@ function AdminResourcesPageContent() {
               </Button>
             </>
           )}
-          <Button variant="ghost" size="sm" onClick={() => router.push(`/admin/resources/${r.id}/edit`)}>
+          <Button variant="ghost" size="sm" aria-label="Edit" title="Edit" onClick={() => router.push(`/admin/resources/${r.id}/edit`)}>
             <Pencil className="h-3.5 w-3.5" />
           </Button>
           {r.status === "ACTIVE" && (
@@ -217,7 +217,7 @@ function AdminResourcesPageContent() {
               <ArchiveRestore className="h-3.5 w-3.5" />
             </Button>
           )}
-          <Button variant="ghost" size="sm" onClick={() => setDeleteModal(r)} className="text-danger hover:text-danger">
+          <Button variant="ghost" size="sm" aria-label="Delete" title="Delete" onClick={() => setDeleteModal(r)} className="text-danger hover:text-danger">
             <Trash2 className="h-3.5 w-3.5" />
           </Button>
         </div>
@@ -267,8 +267,12 @@ function AdminResourcesPageContent() {
           data={data}
           isLoading={isLoading}
           keyExtractor={(r) => r.id}
-          emptyTitle={search ? "No matching resources" : "No resources yet"}
-          emptyDescription={search ? "Try a different search." : "Upload your first resource to get started."}
+          emptyTitle={search || filters.status || filters.visibility ? "No matching resources" : "No resources yet"}
+          emptyDescription={
+            search || filters.status || filters.visibility
+              ? "Nothing matches this search or filter."
+              : "Upload your first resource to get started."
+          }
           pagination={{ currentPage: meta.page, totalPages: meta.totalPages, onPageChange: setPage }}
         />
       </div>

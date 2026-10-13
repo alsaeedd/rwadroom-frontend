@@ -79,9 +79,13 @@ function AdminUsersPageContent() {
     {
       key: "status",
       header: "Status",
-      render: (u) => (
-        <Badge variant={statusVariant[u.status]}>{u.status}</Badge>
-      ),
+      render: (u) =>
+        u.isActive ? (
+          <Badge variant={statusVariant[u.status]}>{u.status}</Badge>
+        ) : (
+          // Deleted and deactivated accounts keep their old profile status; say what matters.
+          <Badge variant="neutral">DEACTIVATED</Badge>
+        ),
     },
     {
       key: "subscription",
@@ -112,6 +116,8 @@ function AdminUsersPageContent() {
         <Button
           variant="ghost"
           size="sm"
+          aria-label="Open user"
+          title="Open"
           onClick={() => router.push(`/admin/users/${u.id}`)}
         >
           <Eye className="h-4 w-4" />
