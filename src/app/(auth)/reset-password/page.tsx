@@ -17,9 +17,9 @@ const schema = z.object({
   password: z
     .string()
     .min(8, "Password must be at least 8 characters")
-    .regex(/[A-Z]/, "Must contain an uppercase letter")
-    .regex(/[0-9]/, "Must contain a number")
-    .regex(/[^a-zA-Z0-9]/, "Must contain a special character"),
+    .regex(/[A-Z]/, "Add an uppercase letter to your password")
+    .regex(/[0-9]/, "Add a number to your password")
+    .regex(/[^a-zA-Z0-9]/, "Add a symbol to your password, like ! or #"),
 });
 
 type ResetForm = z.infer<typeof schema>;
@@ -45,7 +45,7 @@ function ResetPasswordContent() {
           <XCircle className="h-8 w-8 text-danger" />
         </div>
         <h1 className="text-2xl font-bold mb-3">Invalid Link</h1>
-        <p className="text-muted text-sm mb-8 max-w-xs mx-auto">No reset token found. Please request a new password reset.</p>
+        <p className="text-muted text-sm mb-8 max-w-xs mx-auto">This reset link is incomplete. Request a new one.</p>
         <Link href="/forgot-password">
           <Button className="w-full">Request New Link</Button>
         </Link>
@@ -65,7 +65,7 @@ function ResetPasswordContent() {
       if (err instanceof ApiError) {
         setError(err.message);
       } else {
-        setError("Something went wrong. Please try again.");
+        setError("Could not reach Rwad Room. Check your connection and try again.");
       }
     }
   };

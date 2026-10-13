@@ -22,18 +22,21 @@ import type { PartnerProfile, Sector } from "@/lib/types";
 const SECTOR_VALUES = SECTOR_OPTIONS.map((o) => o.value) as [Sector, ...Sector[]];
 
 const schema = z.object({
-  companyName: z.string().min(1, "Company name is required"),
+  companyName: z.string().min(1, "Enter your company name"),
   crNumber: z
     .string()
     .trim()
-    .min(1, "CR number is required")
+    .min(1, "Enter your CR number")
     .min(3, "CR number must be 3 to 30 characters")
     .max(30, "CR number must be 3 to 30 characters"),
   serviceCategory: z.enum(SECTOR_VALUES).optional().or(z.literal("")),
-  discountDescription: z.string().min(5, "Discount description is required").max(500),
-  discountCode: z.string().max(100).optional(),
-  description: z.string().max(2000).optional(),
-  website: z.string().url("Must be a valid URL").optional().or(z.literal("")),
+  discountDescription: z
+    .string()
+    .min(5, "Describe the discount in at least 5 characters")
+    .max(500, "Discount description must be 500 characters or fewer"),
+  discountCode: z.string().max(100, "Discount code must be 100 characters or fewer").optional(),
+  description: z.string().max(2000, "Company description must be 2000 characters or fewer").optional(),
+  website: z.string().url("Enter your website in the correct format, like https://example.com").optional().or(z.literal("")),
 });
 
 type ProfileForm = z.infer<typeof schema>;

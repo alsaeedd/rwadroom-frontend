@@ -33,13 +33,13 @@ const LINK_HELP = "Add your LinkedIn profile or website so we can verify you.";
 
 const schema = z.object({
   title: z.string().optional(),
-  bio: z.string().max(2000).optional(),
-  expertise: z.string().min(1, "At least one area of expertise"),
+  bio: z.string().max(2000, "Bio must be 2000 characters or fewer").optional(),
+  expertise: z.string().min(1, "Add at least one area of expertise"),
   industryFocus: z.array(z.enum(INDUSTRY_VALUES)),
-  languages: z.array(z.enum(LANGUAGE_VALUES)).min(1, "Pick at least one language"),
-  discountNote: z.string().max(500).optional(),
-  linkedinUrl: z.string().url("Must be a valid URL").optional().or(z.literal("")),
-  website: z.string().url("Must be a valid URL").optional().or(z.literal("")),
+  languages: z.array(z.enum(LANGUAGE_VALUES)).min(1, "Choose at least one language"),
+  discountNote: z.string().max(500, "Discount note must be 500 characters or fewer").optional(),
+  linkedinUrl: z.string().url("Enter your LinkedIn URL in the correct format, like https://linkedin.com/in/yourname").optional().or(z.literal("")),
+  website: z.string().url("Enter your website in the correct format, like https://example.com").optional().or(z.literal("")),
 }).refine((d) => d.linkedinUrl || d.website, { message: LINK_HELP, path: ["linkedinUrl"] });
 
 type ProfileForm = z.infer<typeof schema>;

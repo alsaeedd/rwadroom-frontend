@@ -69,10 +69,7 @@ export async function api<T = unknown>(
     }
   }
 
-  if (!res.ok) {
-    const body = await res.json().catch(() => ({}));
-    throw new ApiError(res.status, body.message || "Something went wrong");
-  }
+  if (!res.ok) throw await toApiError(res);
 
   if (res.status === 204) return undefined as T;
   return res.json() as Promise<T>;
@@ -116,12 +113,16 @@ export async function apiUpload<T = unknown>(
     }
   }
 
-  if (!res.ok) {
-    const body = await res.json().catch(() => ({}));
-    throw new ApiError(res.status, body.message || "Upload failed");
-  }
+  if (!res.ok) throw await toApiError(res);
 
   return res.json() as Promise<T>;
+}
+
+/** Validation errors arrive as one sentence per field (an array): show them all. */
+async function toApiError(res: Response) {
+  const body = await res.json().catch(() => ({}));
+  const message = Array.isArray(body.message) ? body.message.join(" ") : body.message;
+  return new ApiError(res.status, message || "Something went wrong on our side. Try again in a moment.");
 }
 
 export class ApiError extends Error {

@@ -13,13 +13,13 @@ import { useAuthStore } from "@/lib/auth";
 import { CheckCircle2 } from "lucide-react";
 
 const schema = z.object({
-  currentPassword: z.string().min(1, "Current password is required"),
+  currentPassword: z.string().min(1, "Enter your current password"),
   newPassword: z
     .string()
-    .min(8, "Password must be at least 8 characters")
-    .regex(/[A-Z]/, "Must contain an uppercase letter")
-    .regex(/[0-9]/, "Must contain a number")
-    .regex(/[^a-zA-Z0-9]/, "Must contain a special character"),
+    .min(8, "New password must be at least 8 characters")
+    .regex(/[A-Z]/, "Add an uppercase letter to your new password")
+    .regex(/[0-9]/, "Add a number to your new password")
+    .regex(/[^a-zA-Z0-9]/, "Add a symbol to your new password, like ! or #"),
 });
 
 type ChangePasswordFormData = z.infer<typeof schema>;
@@ -55,7 +55,7 @@ export function ChangePasswordForm() {
       if (err instanceof ApiError) {
         setError(err.message);
       } else {
-        setError("Something went wrong. Please try again.");
+        setError("Could not reach Rwad Room. Check your connection and try again.");
       }
     }
   };

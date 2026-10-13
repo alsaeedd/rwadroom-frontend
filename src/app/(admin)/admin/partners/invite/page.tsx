@@ -12,8 +12,8 @@ import { api, ApiError } from "@/lib/api";
 import { Send, Handshake, Mail, Building2, CheckCircle2 } from "lucide-react";
 
 const inviteSchema = z.object({
-  email: z.string().email("Please enter a valid email"),
-  companyName: z.string().min(1, "Company name is required"),
+  email: z.string().min(1, "Enter the partner's email address").email("Enter an email address in the correct format, like name@example.com"),
+  companyName: z.string().min(1, "Enter the company name"),
 });
 
 type InviteForm = z.infer<typeof inviteSchema>;
@@ -47,7 +47,7 @@ export default function InvitePartnerPage() {
       if (err instanceof ApiError) {
         setError(err.message);
       } else {
-        setError("Something went wrong. Please try again.");
+        setError("Could not reach Rwad Room. Check your connection and try again.");
       }
     }
   };

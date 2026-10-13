@@ -14,12 +14,12 @@ import { apiUpload, ApiError } from "@/lib/api";
 import type { Resource, ResourceCategory } from "@/lib/types";
 
 const schema = z.object({
-  title: z.string().min(1, "Title is required").max(200),
-  description: z.string().max(1000).optional(),
+  title: z.string().min(1, "Enter a title").max(200, "Title must be 200 characters or fewer"),
+  description: z.string().max(1000, "Description must be 1000 characters or fewer").optional(),
   type: z.enum(["FILE", "LINK"]),
-  categoryId: z.string().min(1, "Category is required"),
+  categoryId: z.string().min(1, "Choose a category"),
   visibility: z.enum(["PUBLIC", "MEMBERS_ONLY"]),
-  externalUrl: z.string().url("Must be a valid URL").optional().or(z.literal("")),
+  externalUrl: z.string().url("Enter the link in the correct format, like https://example.com").optional().or(z.literal("")),
 });
 
 type ResourceFormValues = z.infer<typeof schema>;
@@ -66,7 +66,7 @@ export function ResourceForm({
   const onSubmit = async (data: ResourceFormValues) => {
     setError("");
     if (resourceType === "FILE" && !file && !resource) {
-      setError("Please select a file to upload.");
+      setError("Choose a file to upload.");
       return;
     }
     const formData = new FormData();

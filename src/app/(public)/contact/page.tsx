@@ -13,8 +13,8 @@ import { Alert } from "@/components/ui/alert";
 import { Mail, MapPin, MessageCircle, Send } from "lucide-react";
 
 const schema = z.object({
-  name: z.string().min(2, "Please enter your name"),
-  email: z.string().email("Please enter a valid email"),
+  name: z.string().min(2, "Enter your name"),
+  email: z.string().min(1, "Enter your email address").email("Enter an email address in the correct format, like name@example.com"),
   topic: z.enum([
     "Membership",
     "Partnership",
@@ -22,7 +22,7 @@ const schema = z.object({
     "Press",
     "Other",
   ]),
-  message: z.string().min(10, "Please write at least a sentence"),
+  message: z.string().min(10, "Write a message of at least 10 characters"),
 });
 
 type ContactForm = z.infer<typeof schema>;
@@ -55,7 +55,7 @@ export default function ContactPage() {
       window.location.href = `mailto:hello@rwadroom.com?subject=${subject}&body=${body}`;
       setSubmitted(true);
     } catch {
-      setError("Could not open your email client. Please email hello@rwadroom.com directly.");
+      setError("Your email app didn't open. Email hello@rwadroom.com directly.");
     }
   };
 
