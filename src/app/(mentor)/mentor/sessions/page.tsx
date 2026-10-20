@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Card } from "@/components/ui/card";
+import { CallDetails } from "@/components/call-details";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
@@ -182,6 +183,7 @@ function MentorSessionCard({
           {booking.cancellationReason && (
             <p className="text-sm text-danger mt-1.5">Cancelled: {booking.cancellationReason}</p>
           )}
+          <CallDetails call={booking.call} />
           {isJoinable && (
             <p className="text-xs text-muted mt-1.5">{booking.startup.email}</p>
           )}

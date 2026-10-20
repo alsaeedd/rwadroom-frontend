@@ -288,6 +288,8 @@ export interface Booking {
   isPast: boolean;
   cancelledBy?: string | null;
   cancellationReason?: string | null;
+  /** Recorded by the video provider's webhooks once the room has been used. */
+  call?: CallSummary | null;
   mentor: {
     userId: string;
     name: string;
@@ -376,4 +378,18 @@ export interface SupportTicket {
   user?: { id: string; firstName: string; lastName: string; email: string; role: Role };
   lastMessage?: { body: string; isStaff: boolean; createdAt: string } | null;
   messages?: TicketMessage[];
+}
+
+export interface CallSummary {
+  startedAt: string | null;
+  endedAt: string | null;
+  durationMin: number | null;
+  participants: {
+    userId: string | null;
+    name: string;
+    joinedAt: string | null;
+    leftAt: string | null;
+    minutes: number | null;
+  }[];
+  chat: string | null;
 }
