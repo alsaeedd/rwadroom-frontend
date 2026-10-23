@@ -170,9 +170,9 @@ function MentorSessionCard({
   return (
     <Card className={isCancelled ? "opacity-70" : ""}>
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-        <div className="min-w-0">
+        <Link href={`/mentor/sessions/${booking.id}`} className="group min-w-0 flex-1">
           <div className="flex items-center gap-2 mb-1">
-            <p className="font-semibold truncate">{booking.startup.name}</p>
+            <p className="font-semibold truncate group-hover:underline">{booking.startup.name}</p>
             <StatusBadge booking={booking} />
           </div>
           {company && <p className="text-xs text-muted mb-1">{company}</p>}
@@ -187,7 +187,7 @@ function MentorSessionCard({
           {isJoinable && (
             <p className="text-xs text-muted mt-1.5">{booking.startup.email}</p>
           )}
-        </div>
+        </Link>
         <div className="flex items-center gap-2 shrink-0">
           {isJoinable && (
             <a href={booking.meetingUrl} target="_blank" rel="noopener noreferrer">

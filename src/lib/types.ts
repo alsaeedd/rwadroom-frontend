@@ -391,5 +391,29 @@ export interface CallSummary {
     leftAt: string | null;
     minutes: number | null;
   }[];
-  chat: string | null;
+  messageCount: number;
+  fileCount: number;
+}
+
+export interface ChatMessage {
+  userId: string | null;
+  name: string;
+  email: string | null;
+  text: string;
+  at: string;
+}
+
+export interface CallFile {
+  id: string;
+  name: string;
+  size: number;
+  uploadedBy: string;
+  at: string;
+  /** Presigned download link, valid 15 minutes. */
+  url: string;
+}
+
+/** GET /bookings/:id — the list shape plus the full chat and shared files. */
+export interface BookingDetail extends Omit<Booking, "call"> {
+  call: (CallSummary & { chat: ChatMessage[]; files: CallFile[] }) | null;
 }

@@ -173,9 +173,9 @@ function SessionCard({
   return (
     <Card className={isCancelled ? "opacity-70" : ""}>
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-        <div className="min-w-0">
+        <Link href={`/dashboard/sessions/${booking.id}`} className="group min-w-0 flex-1">
           <div className="flex items-center gap-2 mb-1">
-            <p className="font-semibold truncate">{counterpartLabel}</p>
+            <p className="font-semibold truncate group-hover:underline">{counterpartLabel}</p>
             <StatusBadge booking={booking} />
           </div>
           {counterpartSub && <p className="text-xs text-muted mb-1">{counterpartSub}</p>}
@@ -187,7 +187,7 @@ function SessionCard({
             <p className="text-sm text-danger mt-1.5">Cancelled: {booking.cancellationReason}</p>
           )}
           <CallDetails call={booking.call} />
-        </div>
+        </Link>
         <div className="flex items-center gap-2 shrink-0">
           {isJoinable && (
             <a href={booking.meetingUrl} target="_blank" rel="noopener noreferrer">
